@@ -1,0 +1,18 @@
+# Viikko 3
+- Lisätty luokkia pakettien esittämiseen
+    - Packet
+    - Ethernet
+    - IP
+    - TCP
+    - UDP
+    - DNS
+- Lisätty IntEnum-tyyppiset luokat numeraalisten arvojen tallentamiseen
+    - DNS QTYPE
+    - DNS OPTYPE
+    - DNS DIRECTION
+    - LAYER TYPE
+- DNS paketeista parsitaan onnistuneesti link, network, transport ja application -kerroksien tiedot
+- Käyttäjä voi listata parsitut paketit tietoineen
+- Yhteenveto sisältää
+    - Onnistuneesti parsittujen pakettien määrä
+    - DNS kyselyjen määrä per FQDN
