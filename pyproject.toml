@@ -10,11 +10,14 @@ package-mode = false
 python = "^3.12"
 scapy = "^2.5.0"
 invoke = "^2.2.0"
+matplotlib = "^3.8.4"
+tldextract = "^5.1.2"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
 coverage = "^7.4.4"
+pylint = "^3.1.0"
 
 [build-system]
 requires = ["poetry-core"]
