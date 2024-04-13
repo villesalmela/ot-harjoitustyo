@@ -125,18 +125,25 @@ def parse_dhcp(bootp_layer: BOOTP, dhcp_layer: DHCP) -> tuple[myDHCP, int, int]:
 def parse_link(packet: Packet) -> Layer | None:
     if Ether in packet:
         return Layer(*parse_ether(packet[Ether]))
-    
+    return None
+
+
 def parse_network(packet: Packet) -> Layer | None:
     if IP in packet:
         return Layer(*parse_ip(packet[IP]))
-    
+    return None
+
+
 def parse_transport(packet: Packet) -> Layer | None:
     if TCP in packet:
         return Layer(*parse_tcp(packet[TCP]))
-    elif UDP in packet:
+    if UDP in packet:
         return Layer(*parse_udp(packet[UDP]))
-    
+    return None
+
+
 def parse_application(packet: Packet) -> Layer | None:
+
     if DNS in packet:
         return Layer(*parse_dns(packet[DNS]))
     if DHCP in packet and BOOTP in packet:
@@ -157,7 +164,7 @@ def parse_pcap(pcap_file: str) -> list[myPacket]:
         current_packet.layers[LayerType.NETWORK] = parse_network(packet)
         current_packet.layers[LayerType.TRANSPORT] = parse_transport(packet)
         current_packet.layers[LayerType.APPLICATION] = parse_application(packet)
-        
+
         parsed_packets.append(current_packet)
 
     return parsed_packets
@@ -186,7 +193,7 @@ def extract_2ld(fqdn):
     # Basic assumption: The last two parts are the domain and TLD
     if len(parts) >= 2:
         return f"{parts[-2]}.{parts[-1]}"
-    
+
     # Return the original
     return fqdn
 
