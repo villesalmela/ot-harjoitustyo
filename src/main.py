@@ -88,19 +88,19 @@ def parse_pcap(pcap_file: str) -> list[myPacket]:
         current_packet = myPacket(datetime.fromtimestamp(
             float(packet.time)), len(packet))
         if Ether in packet:
-            current_packet.layers[LayerType.LINK] = Layer(packet, *parse_ether(packet[Ether]))
+            current_packet.layers[LayerType.LINK] = Layer(*parse_ether(packet[Ether]))
 
         if IP in packet:
-            current_packet.layers[LayerType.NETWORK] = Layer(packet, *parse_ip(packet[IP]))
+            current_packet.layers[LayerType.NETWORK] = Layer(*parse_ip(packet[IP]))
 
         if TCP in packet:
-            current_packet.layers[LayerType.TRANSPORT] = Layer(packet, *parse_tcp(packet[TCP]))
+            current_packet.layers[LayerType.TRANSPORT] = Layer(*parse_tcp(packet[TCP]))
 
         elif UDP in packet:
-            current_packet.layers[LayerType.TRANSPORT] = Layer(packet, *parse_udp(packet[UDP]))
+            current_packet.layers[LayerType.TRANSPORT] = Layer(*parse_udp(packet[UDP]))
 
         if DNS in packet:
-            current_packet.layers[LayerType.APPLICATION] = Layer(packet, *parse_dns(packet[DNS]))
+            current_packet.layers[LayerType.APPLICATION] = Layer(*parse_dns(packet[DNS]))
             parsed_packets.append(current_packet)
 
     return parsed_packets

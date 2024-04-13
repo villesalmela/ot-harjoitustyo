@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Self
 
 
 class Packet:
@@ -15,3 +16,10 @@ class Packet:
             out += f"{layer}\n"
 
         return f"### PACKET START ###\n{out.strip()}\n### PACKET END ###\n"
+    
+    def __eq__(self, value: Self) -> bool:
+        if not isinstance(value, Packet):
+            return False
+        return self.time == value.time and \
+            self.size == value.size and \
+            self.layers == value.layers
