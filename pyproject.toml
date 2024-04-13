@@ -30,6 +30,7 @@ recursive = true
 in-place = true
 wrap-summaries = 100
 wrap-descriptions = 100
+force-wrap = true
 
 [tool.autopep8]
 max_line_length = 100
