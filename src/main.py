@@ -73,6 +73,7 @@ def parse_dns(dns_layer: DNS) -> tuple[myDNS, int, int]:
     else:
         answers = None
     return myDNS(
+        dns_layer.id,
         DNSDir(dns_layer.qr), DNSOpCode(dns_layer.opcode),
         DNSQType(dns_layer.qd.qtype),
         dns_layer.qd.qname,
