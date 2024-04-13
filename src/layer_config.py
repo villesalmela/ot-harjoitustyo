@@ -1,5 +1,6 @@
-from layer_type import LayerType
 from typing import Any
+from layer_type import LayerType
+
 
 class LayerConfig:
     def __init__(self, layer_type: LayerType, name: str, data: dict[str, Any]) -> None:

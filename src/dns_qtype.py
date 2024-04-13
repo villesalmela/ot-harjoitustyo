@@ -2,6 +2,7 @@
 
 from enum import IntEnum
 
+
 class DNSQType(IntEnum):
     A = 1             # IPv4 address
     NS = 2            # Name server
@@ -68,5 +69,3 @@ class DNSQType(IntEnum):
     SVCB = 64         # Service Binding
     HTTPS = 65        # HTTPS Binding
     ANY = 255         # Wildcard match
-
-

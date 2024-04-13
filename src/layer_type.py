@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 class LayerType(IntEnum):
     LINK = 1
     NETWORK = 2

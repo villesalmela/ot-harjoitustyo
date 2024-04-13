@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class Packet:
 
     def __init__(self, time: datetime, size: int) -> None:
@@ -14,5 +15,3 @@ class Packet:
             out += f"{layer}\n"
 
         return f"### PACKET START ###\n{out.strip()}\n### PACKET END ###\n"
-
-    

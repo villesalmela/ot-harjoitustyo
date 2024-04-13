@@ -2,6 +2,7 @@
 
 from enum import IntEnum
 
+
 class DNSOpCode(IntEnum):
     QUERY = 0         # Standard query (RFC 1035)
     IQUERY = 1        # Inverse query (deprecated by RFC 3425)
