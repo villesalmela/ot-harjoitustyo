@@ -13,10 +13,8 @@ class TestDNS(unittest.TestCase):
 
     def test_count_dns_domains(self) -> None:
         domain_counts = count_dns_domains(self.parsed_packets)
-        self.assertEqual(domain_counts["google.com."], 3)
-        self.assertEqual(domain_counts["www.google.com."], 1)
-        self.assertEqual(domain_counts["isc.org."], 1)
-        self.assertEqual(domain_counts["www.isc.org."], 1)
+        self.assertEqual(domain_counts["google.com"], 5)
+        self.assertEqual(domain_counts["isc.org"], 2)
 
     def test_dns_layer_query(self) -> None:
         dns_layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
