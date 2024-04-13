@@ -27,8 +27,10 @@ from ui.ui import start_app
 
 
 def parse_dns_answers(dns_layer) -> list[dict[str, str | int]]:
-    """Generated with ChatGPT Parse DNS answers from a Scapy DNS layer object to extract answer
-    fields and their values in a dictionary.
+    """Generated with ChatGPT.
+
+    Parse DNS answers from a Scapy DNS layer object to extract answer fields and their values in a
+    dictionary.
 
     :param dns_layer: Scapy DNS response object
     :return: dictionary containing answer fields and their values
@@ -104,7 +106,13 @@ def parse_pcap(pcap_file: str) -> list[myPacket]:
     return parsed_packets
 
 
-def extract_main_part_with_fallback(fqdn):
+def extract_2ld(fqdn):
+    """Generated with ChatGPT.
+
+    Extract the second level domain from a fully qualified domain name (FQDN).
+    :param fqdn: Fully qualified domain name
+    :return: 2LD and TLD combined
+    """
     # First try with tldextract
     extracted = tldextract.extract(fqdn)
     if extracted.domain and extracted.suffix:
@@ -132,7 +140,7 @@ def count_dns_domains(packets: list[myPacket]) -> dict[str, int]:
         dns_layer = packet.layers[LayerType.APPLICATION]
         if dns_layer and dns_layer.name == "DNS" and dns_layer.data["direction"] == DNSDir.QUERY:
             fqdn = dns_layer.data["name"].strip(".")
-            domain = extract_main_part_with_fallback(fqdn)
+            domain = extract_2ld(fqdn)
             counter[domain] += 1
     return dict(counter)
 
