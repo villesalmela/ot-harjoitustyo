@@ -1,4 +1,5 @@
 from typing import Self
+import json
 
 from layer_config import LayerConfig
 
@@ -13,8 +14,8 @@ class Layer:
 
     def __str__(self) -> str:
         return f"name = {self.name}\n" + f"size_total = {self.size_total}\n" + \
-            f"size_payload = {self.size_payload}\n" + f"data = {self.data}\n"
-    
+            f"size_payload = {self.size_payload}\n" + f"data = {json.dumps(self.data, indent=4)}\n"
+
     def __eq__(self, value: Self) -> bool:
         if not isinstance(value, Layer):
             return False
