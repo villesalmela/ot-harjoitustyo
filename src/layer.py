@@ -1,6 +1,5 @@
 from typing import Self
 
-from packet import Packet
 from layer_config import LayerConfig
 
 
