@@ -36,3 +36,13 @@ max_line_length = 100
 in-place = true
 recursive = true
 aggressive = 3
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest src/tests"
+source = ["src"]
+omit = [
+    "src/**/__init__.py",
+    "src/tests/**",
+    "src/ui/**",
+    ]
