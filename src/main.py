@@ -121,16 +121,15 @@ def extract_2ld(fqdn):
 
     # Fallback mechanism
     parts = fqdn.split('.')
+
     # Basic assumption: The last two parts are the domain and TLD
-    # This might not be perfect but works as a simple heuristic
     if len(parts) >= 2:
         return f"{parts[-2]}.{parts[-1]}"
     if len(parts) == 1:
         # Edge case: only one part is present
         return parts[0]
 
-    # If somehow we have an unexpected format, return the input
-    return fqdn
+    raise ValueError("Could not extract 2LD from FQDN")
 
 
 def count_dns_domains(packets: list[myPacket]) -> dict[str, int]:
