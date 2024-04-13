@@ -8,7 +8,7 @@ from scapy.layers.l2 import Ether, ARP
 from scapy.layers.dns import DNS
 # from scapy.layers.http import HTTPRequest, HTTPResponse
 # from scapy.layers.tls.handshake import TLSServerHello, TLSClientHello
-# from scapy.layers.dhcp import DHCP
+from scapy.layers.dhcp import DHCP, BOOTP
 from scapy.utils import rdpcap
 import tldextract
 
@@ -20,10 +20,13 @@ from layers.ip import IP as myIP
 from layers.tcp import TCP as myTCP
 from layers.udp import UDP as myUDP
 from layers.dns import DNS as myDNS
+from layers.dhcp import DHCP as myDHCP
 from dns_opcode import DNSOpCode
 from dns_qtype import DNSQType
 from dns_dir import DNSDir
 from ui.ui import start_app
+from dhcp_message_type import DHCPMessageType
+from bootp_opcode import BOOTPOpCode
 
 
 def parse_dns_answers(dns_layer) -> list[dict[str, str | int]]:
@@ -76,6 +79,48 @@ def parse_dns(dns_layer: DNS) -> tuple[myDNS, int, int]:
         answers
     ), len(dns_layer), len(dns_layer.payload)
 
+
+def parse_dhcp(bootp_layer: BOOTP, dhcp_layer: DHCP) -> tuple[myDHCP, int, int]:
+    def get_option(options, key):
+        for option in options:
+            if option[0] == key:
+                value = option[1]
+                if isinstance(value, bytes):
+                    return value
+                return value
+        return ""
+
+    def convert_mac(mac):
+        """Generated with ChatGPT.
+
+        Convert a MAC address to a colon-separated hexadecimal string.
+        """
+        return ":".join([f"{int(byte):02x}" for byte in mac.strip(b"\x00")])
+
+    client_data = {
+        "mac": convert_mac(bootp_layer.chaddr),
+        "ip_current": bootp_layer.ciaddr,
+        "ip_assigned": bootp_layer.yiaddr,
+        "hostname": get_option(dhcp_layer.options, "hostname")
+    }
+    server_data = {
+        "ip": bootp_layer.siaddr,
+        "hostname": bootp_layer.sname
+    }
+    network_data = {
+        "domain": get_option(dhcp_layer.options, "domain"),
+        "name_server": get_option(dhcp_layer.options, "name_server"),
+        "router": get_option(dhcp_layer.options, "router")
+    }
+    protocol_data = {
+        "operation": BOOTPOpCode(bootp_layer.op),
+        "message_type": DHCPMessageType(get_option(dhcp_layer.options, "message-type")),
+        "transaction_id": bootp_layer.xid
+    }
+    return myDHCP(protocol_data, client_data, server_data, network_data), len(
+        bootp_layer), len(dhcp_layer.payload)
+
+
 def parse_link(packet: Packet) -> Layer | None:
     if Ether in packet:
         return Layer(*parse_ether(packet[Ether]))
@@ -93,6 +138,12 @@ def parse_transport(packet: Packet) -> Layer | None:
 def parse_application(packet: Packet) -> Layer | None:
     if DNS in packet:
         return Layer(*parse_dns(packet[DNS]))
+    if DHCP in packet and BOOTP in packet:
+        dhcp_layer = packet[DHCP]
+        bootp_layer = packet[BOOTP]
+        return Layer(*parse_dhcp(bootp_layer, dhcp_layer))
+    return None
+
 
 def parse_pcap(pcap_file: str) -> list[myPacket]:
     packets = rdpcap(pcap_file)
