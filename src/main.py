@@ -7,6 +7,8 @@ from scapy.layers.dns import DNS
 # from scapy.layers.dhcp import DHCP
 from scapy.utils import rdpcap
 from datetime import datetime
+import tldextract
+
 from packet import Packet as myPacket
 from layer_type import LayerType
 from layer import Layer
@@ -77,13 +79,37 @@ def parse_pcap(pcap_file: str) -> list[myPacket]:
 
     return parsed_packets
 
+
+def extract_main_part_with_fallback(fqdn):
+    # First try with tldextract
+    extracted = tldextract.extract(fqdn)
+    if extracted.domain and extracted.suffix:
+        # If both parts are identified, return them
+        return f"{extracted.domain}.{extracted.suffix}"
+
+    # Fallback mechanism
+    parts = fqdn.split('.')
+    # Basic assumption: The last two parts are the domain and TLD
+    # This might not be perfect but works as a simple heuristic
+    if len(parts) >= 2:
+        return f"{parts[-2]}.{parts[-1]}"
+    if len(parts) == 1:
+        # Edge case: only one part is present
+        return parts[0]
+
+    # If somehow we have an unexpected format, return the input
+    return fqdn
+
+
 def count_dns_domains(packets: list[myPacket]) -> dict[str, int]:
     """Return a counter object containing number of queries per domain name."""
     counter = Counter()
     for packet in packets:
         dns_layer = packet.layers[LayerType.APPLICATION]
         if dns_layer and dns_layer.name == "DNS" and dns_layer.data["direction"] == DNSDir.QUERY:
-            counter[dns_layer.data["name"]] += 1
+            fqdn = dns_layer.data["name"].strip(".")
+            domain = extract_main_part_with_fallback(fqdn)
+            counter[domain] += 1
     return dict(counter)
 
 
