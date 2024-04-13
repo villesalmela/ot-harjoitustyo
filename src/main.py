@@ -77,31 +77,37 @@ def parse_dns(dns_layer: DNS) -> tuple[myDNS, int, int]:
         answers
     ), len(dns_layer), len(dns_layer.payload)
 
+def parse_link(packet: Packet) -> Layer | None:
+    if Ether in packet:
+        return Layer(*parse_ether(packet[Ether]))
+    
+def parse_network(packet: Packet) -> Layer | None:
+    if IP in packet:
+        return Layer(*parse_ip(packet[IP]))
+    
+def parse_transport(packet: Packet) -> Layer | None:
+    if TCP in packet:
+        return Layer(*parse_tcp(packet[TCP]))
+    elif UDP in packet:
+        return Layer(*parse_udp(packet[UDP]))
+    
+def parse_application(packet: Packet) -> Layer | None:
+    if DNS in packet:
+        return Layer(*parse_dns(packet[DNS]))
 
 def parse_pcap(pcap_file: str) -> list[myPacket]:
     packets = rdpcap(pcap_file)
     parsed_packets = []
 
     for packet in packets:
-        packet: Packet
 
-        current_packet = myPacket(datetime.fromtimestamp(
-            float(packet.time)), len(packet))
-        if Ether in packet:
-            current_packet.layers[LayerType.LINK] = Layer(*parse_ether(packet[Ether]))
-
-        if IP in packet:
-            current_packet.layers[LayerType.NETWORK] = Layer(*parse_ip(packet[IP]))
-
-        if TCP in packet:
-            current_packet.layers[LayerType.TRANSPORT] = Layer(*parse_tcp(packet[TCP]))
-
-        elif UDP in packet:
-            current_packet.layers[LayerType.TRANSPORT] = Layer(*parse_udp(packet[UDP]))
-
-        if DNS in packet:
-            current_packet.layers[LayerType.APPLICATION] = Layer(*parse_dns(packet[DNS]))
-            parsed_packets.append(current_packet)
+        current_packet = myPacket(datetime.fromtimestamp(float(packet.time)), len(packet))
+        current_packet.layers[LayerType.LINK] = parse_link(packet)
+        current_packet.layers[LayerType.NETWORK] = parse_network(packet)
+        current_packet.layers[LayerType.TRANSPORT] = parse_transport(packet)
+        current_packet.layers[LayerType.APPLICATION] = parse_application(packet)
+        
+        parsed_packets.append(current_packet)
 
     return parsed_packets
 
