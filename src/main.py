@@ -44,8 +44,7 @@ def parse_dns_answers(dns_layer) -> list[dict[str, str | int]]:
             break
     for answer in answers:
         for key, value in answer.items():
-            answer[key] = value.decode(
-                "utf-8") if isinstance(value, bytes) else value
+            answer[key] = value
     return answers
 
 
@@ -73,7 +72,7 @@ def parse_dns(dns_layer: DNS) -> tuple[myDNS, int, int]:
     return myDNS(
         DNSDir(dns_layer.qr), DNSOpCode(dns_layer.opcode),
         DNSQType(dns_layer.qd.qtype),
-        dns_layer.qd.qname.decode("utf-8"),
+        dns_layer.qd.qname,
         answers
     ), len(dns_layer), len(dns_layer.payload)
 
