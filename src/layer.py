@@ -2,6 +2,7 @@ from typing import Self
 import json
 
 from layer_config import LayerConfig
+from utils import preprocess_data
 
 
 class Layer:
@@ -10,7 +11,7 @@ class Layer:
         self.size_payload = size_payload
         self.layer_type = config.layer_type
         self.name = config.name
-        self.data = config.data
+        self.data = preprocess_data(config.data)
 
     def __str__(self) -> str:
         return f"name = {self.name}\n" + f"size_total = {self.size_total}\n" + \
@@ -24,5 +25,3 @@ class Layer:
             self.data == value.data and \
             self.size_total == value.size_total and \
             self.size_payload == value.size_payload
-        
-    
