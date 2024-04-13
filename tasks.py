@@ -22,4 +22,4 @@ def lint(ctx):
 
 @task
 def format(ctx):
-    ctx.run("autopep --in-place --recursive src", pty=True)
+    ctx.run("autopep8 src && docformatter src")
