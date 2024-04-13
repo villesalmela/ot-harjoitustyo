@@ -1,7 +1,7 @@
 import unittest
 
 from layers.dns import DNS
-from main import parse_pcap, count_dns_domains
+from main import parse_pcap, count_dns_domains, extract_2ld
 from layer_type import LayerType
 from dns_dir import DNSDir
 from dns_opcode import DNSOpCode
@@ -40,3 +40,29 @@ class TestDNS(unittest.TestCase):
                            'ttl': 270,
                            'rdlen': 16,
                            'rdata': [b'v=spf1 ptr ?all']}])
+        
+    def test_2ld_extraction_normal(self) -> None:
+        domain = extract_2ld("www.google.com")
+        self.assertEqual(domain, "google.com")
+
+    def test_2ld_extraction_no_effect(self) -> None:
+        domain = extract_2ld("google.com")
+        self.assertEqual(domain, "google.com")
+    
+    def test_2ld_extraction_fallback_single(self) -> None:
+        domain = extract_2ld("localhost")
+        self.assertEqual(domain, "localhost")
+
+    def test_2ld_extraction_fallback_empty(self) -> None:
+        with self.assertRaises(ValueError):
+            extract_2ld("")
+
+    def test_2ld_extraction_fallback_invalid_tld_normal(self) -> None:
+        domain = extract_2ld("www.google.invalid")
+        self.assertEqual(domain, "google.invalid")
+
+    def test_2ld_extraction_fallback_invalid_tld_no_effect(self) -> None:
+        domain = extract_2ld("google.invalid")
+        self.assertEqual(domain, "google.invalid")
+
+    
