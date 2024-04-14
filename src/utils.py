@@ -31,7 +31,9 @@ def preprocess_data(data):
             # Attempt conversion to int if it matches exactly
             if data == int(data):
                 data = int(data)
-        except (ValueError, TypeError, OverflowError):
+            else:
+                data = float(data)
+        except (ValueError, TypeError, OverflowError, NotImplementedError):
             # If conversion to int fails, fall back to float
             data = float(data)
 
