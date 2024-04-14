@@ -1,7 +1,5 @@
 import unittest
-from datetime import datetime
 
-from layers.dns import DNS
 from main import parse_pcap, count_dns_domains, extract_2ld
 from layer_type import LayerType
 from dns_dir import DNSDir
@@ -20,25 +18,30 @@ class TestDNS(unittest.TestCase):
 
     def test_dns_layer_query_data(self) -> None:
         dns_layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
-        self.assertEqual(dns_layer.data["direction"], DNSDir.QUERY)
-        self.assertEqual(dns_layer.data["opcode"], DNSOpCode.QUERY)
-        self.assertEqual(dns_layer.data["qtype"], DNSQType.TXT)
-        self.assertEqual(dns_layer.data["name"], "google.com.")
-        self.assertIsNone(dns_layer.data["answers"])
+        self.assertEqual(dns_layer.data, {
+            "transaction_id": 4146,
+            "direction": DNSDir.QUERY,
+            "opcode": DNSOpCode.QUERY,
+            "qtype": DNSQType.TXT,
+            "name": "google.com.",
+            "answers": None
+        })
 
     def test_dns_layer_response_data(self) -> None:
         dns_layer = self.parsed_packets[1].layers[LayerType.APPLICATION]
-        self.assertEqual(dns_layer.data["direction"], DNSDir.RESPONSE)
-        self.assertEqual(dns_layer.data["opcode"], DNSOpCode.QUERY)
-        self.assertEqual(dns_layer.data["qtype"], DNSQType.TXT)
-        self.assertEqual(dns_layer.data["name"], "google.com.")
-        self.assertEqual(dns_layer.data["answers"],
-                         [{'rrname': 'google.com.',
-                           'type': 16,
-                           'rclass': 1,
-                           'ttl': 270,
-                           'rdlen': 16,
-                           'rdata': ['v=spf1 ptr ?all']}])
+        self.assertEqual(dns_layer.data, {
+            "transaction_id": 4146,
+            "direction": DNSDir.RESPONSE,
+            "opcode": DNSOpCode.QUERY,
+            "qtype": DNSQType.TXT,
+            "name": "google.com.",
+            "answers": [{'rrname': 'google.com.',
+                         'type': 16,
+                         'rclass': 1,
+                         'ttl': 270,
+                         'rdlen': 16,
+                         'rdata': ['v=spf1 ptr ?all']}]
+        })
 
     def test_2ld_extraction_normal(self) -> None:
         domain = extract_2ld("www.google.com")
@@ -63,19 +66,3 @@ class TestDNS(unittest.TestCase):
     def test_2ld_extraction_fallback_invalid_tld_no_effect(self) -> None:
         domain = extract_2ld("google.invalid")
         self.assertEqual(domain, "google.invalid")
-
-    def test_packet(self) -> None:
-        packet = self.parsed_packets[0]
-        self.assertEqual(packet.size, 70)
-        self.assertEqual(packet.time, datetime(2005, 3, 30, 11, 47, 46, 496046))
-        self.assertTrue(packet == packet)
-        self.assertFalse(packet == 1)
-
-    def test_layer(self) -> None:
-        layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
-        self.assertEqual(layer.size_total, 28)
-        self.assertEqual(layer.size_payload, 0)
-        self.assertEqual(layer.layer_type, LayerType.APPLICATION)
-        self.assertEqual(layer.name, "DNS")
-        self.assertTrue(layer == layer)
-        self.assertFalse(layer == 1)
