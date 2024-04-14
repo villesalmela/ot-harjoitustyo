@@ -1,6 +1,6 @@
 from typing import Any
 from layers.layer_config import LayerConfig
-from properties.layer_level import LayerLevel
+from layers.layer_level import LayerLevel
 
 
 class DHCP(LayerConfig):

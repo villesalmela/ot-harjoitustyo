@@ -10,7 +10,7 @@ from scapy.layers.dhcp import DHCP, BOOTP
 from scapy.utils import rdpcap
 
 from components.packet import Packet as myPacket
-from properties.layer_level import LayerLevel
+from layers.layer_level import LayerLevel
 from components.layer import Layer
 from layers.ethernet import Ethernet as myEthernet
 from layers.ip import IP as myIP

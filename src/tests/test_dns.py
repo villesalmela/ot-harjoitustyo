@@ -3,10 +3,10 @@ import unittest
 from parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from utils.utils import extract_2ld
-from properties.layer_level import LayerLevel
-from properties.dns_dir import DNSDir
-from properties.dns_opcode import DNSOpCode
-from properties.dns_qtype import DNSQType
+from layers.layer_level import LayerLevel
+from layers.properties.dns_dir import DNSDir
+from layers.properties.dns_opcode import DNSOpCode
+from layers.properties.dns_qtype import DNSQType
 
 
 class TestDNS(unittest.TestCase):

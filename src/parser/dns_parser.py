@@ -1,7 +1,7 @@
 from scapy.layers.dns import DNS
-from properties.dns_dir import DNSDir
-from properties.dns_opcode import DNSOpCode
-from properties.dns_qtype import DNSQType
+from layers.properties.dns_dir import DNSDir
+from layers.properties.dns_opcode import DNSOpCode
+from layers.properties.dns_qtype import DNSQType
 from layers.dns import DNS as myDNS
 
 

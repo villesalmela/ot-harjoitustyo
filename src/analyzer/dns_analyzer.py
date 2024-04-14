@@ -1,8 +1,8 @@
 from collections import Counter
 
 from components.packet import Packet as myPacket
-from properties.layer_level import LayerLevel
-from properties.dns_dir import DNSDir
+from layers.layer_level import LayerLevel
+from layers.properties.dns_dir import DNSDir
 from utils.utils import extract_2ld
 
 

@@ -1,9 +1,9 @@
 import unittest
 
 from parser.pcap_parser import PcapParser
-from properties.layer_level import LayerLevel
-from properties.dhcp_message_type import DHCPMessageType
-from properties.bootp_opcode import BOOTPOpCode
+from layers.layer_level import LayerLevel
+from layers.properties.dhcp_message_type import DHCPMessageType
+from layers.properties.bootp_opcode import BOOTPOpCode
 
 
 class TestDHCP(unittest.TestCase):

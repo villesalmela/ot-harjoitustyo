@@ -1,5 +1,5 @@
 from layers.layer_config import LayerConfig
-from properties.layer_level import LayerLevel
+from layers.layer_level import LayerLevel
 
 
 class IP(LayerConfig):

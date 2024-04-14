@@ -1,7 +1,7 @@
 from scapy.layers.dhcp import DHCP, BOOTP
 from layers.dhcp import DHCP as myDHCP
-from properties.dhcp_message_type import DHCPMessageType
-from properties.bootp_opcode import BOOTPOpCode
+from layers.properties.dhcp_message_type import DHCPMessageType
+from layers.properties.bootp_opcode import BOOTPOpCode
 
 class DHCPParser:
 

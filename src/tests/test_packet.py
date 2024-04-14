@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 from parser.pcap_parser import PcapParser
-from properties.layer_level import LayerLevel
+from layers.layer_level import LayerLevel
 
 
 class TestPacket(unittest.TestCase):
