@@ -1,5 +1,5 @@
 from layers.layer_config import LayerConfig
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 from properties.dns_dir import DNSDir
 from properties.dns_opcode import DNSOpCode
 from properties.dns_qtype import DNSQType
@@ -15,7 +15,7 @@ class DNS(LayerConfig):
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
 
-        super().__init__(LayerType.APPLICATION, "DNS", {
+        super().__init__(LayerLevel.APPLICATION, "DNS", {
             "transaction_id": transaction_id,
             "direction": direction,
             "opcode": opcode,

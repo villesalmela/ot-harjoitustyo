@@ -3,7 +3,7 @@ import unittest
 from parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from utils.utils import extract_2ld
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 from properties.dns_dir import DNSDir
 from properties.dns_opcode import DNSOpCode
 from properties.dns_qtype import DNSQType
@@ -20,7 +20,7 @@ class TestDNS(unittest.TestCase):
         self.assertEqual(domain_counts["isc.org"], 2)
 
     def test_dns_layer_query_data(self) -> None:
-        dns_layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
+        dns_layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(dns_layer.data, {
             "transaction_id": 4146,
             "direction": DNSDir.QUERY,
@@ -31,7 +31,7 @@ class TestDNS(unittest.TestCase):
         })
 
     def test_dns_layer_response_data(self) -> None:
-        dns_layer = self.parsed_packets[1].layers[LayerType.APPLICATION]
+        dns_layer = self.parsed_packets[1].layers[LayerLevel.APPLICATION]
         self.assertEqual(dns_layer.data, {
             "transaction_id": 4146,
             "direction": DNSDir.RESPONSE,

@@ -10,7 +10,7 @@ from scapy.layers.dhcp import DHCP, BOOTP
 from scapy.utils import rdpcap
 
 from components.packet import Packet as myPacket
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 from components.layer import Layer
 from layers.ethernet import Ethernet as myEthernet
 from layers.ip import IP as myIP
@@ -34,10 +34,10 @@ class PcapParser:
         for packet in raw_packets:
 
             parsed_packet = myPacket(datetime.fromtimestamp(float(packet.time)), len(packet))
-            parsed_packet.layers[LayerType.LINK] = self.parse_link(packet)
-            parsed_packet.layers[LayerType.NETWORK] = self.parse_network(packet)
-            parsed_packet.layers[LayerType.TRANSPORT] = self.parse_transport(packet)
-            parsed_packet.layers[LayerType.APPLICATION] = self.parse_application(packet)
+            parsed_packet.layers[LayerLevel.LINK] = self.parse_link(packet)
+            parsed_packet.layers[LayerLevel.NETWORK] = self.parse_network(packet)
+            parsed_packet.layers[LayerLevel.TRANSPORT] = self.parse_transport(packet)
+            parsed_packet.layers[LayerLevel.APPLICATION] = self.parse_application(packet)
 
             parsed_packets.append(parsed_packet)
 

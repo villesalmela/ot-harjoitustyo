@@ -1,7 +1,7 @@
 from collections import Counter
 
 from components.packet import Packet as myPacket
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 from properties.dns_dir import DNSDir
 from utils.utils import extract_2ld
 
@@ -13,7 +13,7 @@ class DNSAnalyzer:
         """Return a counter object containing number of queries per domain name."""
         counter = Counter()
         for packet in packets:
-            dns_layer = packet.layers[LayerType.APPLICATION]
+            dns_layer = packet.layers[LayerLevel.APPLICATION]
             if dns_layer and dns_layer.name == "DNS" and dns_layer.data["direction"] == DNSDir.QUERY:
                 fqdn = dns_layer.data["name"].strip(".")
                 domain = extract_2ld(fqdn)

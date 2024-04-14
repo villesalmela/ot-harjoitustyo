@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 from parser.pcap_parser import PcapParser
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 
 
 class TestPacket(unittest.TestCase):
@@ -20,10 +20,10 @@ class TestPacket(unittest.TestCase):
         self.assertFalse(packet == 1)
 
     def test_layer(self) -> None:
-        layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
+        layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(layer.size_total, 28)
         self.assertEqual(layer.size_payload, 0)
-        self.assertEqual(layer.layer_type, LayerType.APPLICATION)
+        self.assertEqual(layer.layer_type, LayerLevel.APPLICATION)
         self.assertEqual(layer.name, "DNS")
         self.assertTrue(layer == layer)
         self.assertFalse(layer == 1)

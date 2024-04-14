@@ -1,6 +1,6 @@
 from typing import Any
 from layers.layer_config import LayerConfig
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 
 
 class DHCP(LayerConfig):
@@ -9,7 +9,7 @@ class DHCP(LayerConfig):
                  server_data: dict[str, Any],
                  network_data: dict[str, Any]) -> None:
 
-        super().__init__(LayerType.APPLICATION, "DHCP", {
+        super().__init__(LayerLevel.APPLICATION, "DHCP", {
             "operation": protocol_data["operation"],
             "message_type": protocol_data["message_type"],
             "transaction_id": protocol_data["transaction_id"],

@@ -1,7 +1,7 @@
 import unittest
 
 from parser.pcap_parser import PcapParser
-from properties.layer_type import LayerType
+from properties.layer_level import LayerLevel
 from properties.dhcp_message_type import DHCPMessageType
 from properties.bootp_opcode import BOOTPOpCode
 
@@ -13,7 +13,7 @@ class TestDHCP(unittest.TestCase):
         self.parsed_packets = parser.parse_pcap("assets/dhcp.pcap")
 
     def test_dhcp_discover(self) -> None:
-        dhcp_layer = self.parsed_packets[0].layers[LayerType.APPLICATION]
+        dhcp_layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(dhcp_layer.data, {
             "operation": BOOTPOpCode.BOOTREQUEST,
             "message_type": DHCPMessageType.DHCPDISCOVER,
@@ -30,7 +30,7 @@ class TestDHCP(unittest.TestCase):
         })
 
     def test_dhcp_offer(self) -> None:
-        dhcp_layer = self.parsed_packets[1].layers[LayerType.APPLICATION]
+        dhcp_layer = self.parsed_packets[1].layers[LayerLevel.APPLICATION]
         self.assertEqual(dhcp_layer.data, {
             "operation": BOOTPOpCode.BOOTREPLY,
             "message_type": DHCPMessageType.DHCPOFFER,
@@ -47,7 +47,7 @@ class TestDHCP(unittest.TestCase):
         })
 
     def test_dhcp_request(self) -> None:
-        dhcp_layer = self.parsed_packets[2].layers[LayerType.APPLICATION]
+        dhcp_layer = self.parsed_packets[2].layers[LayerLevel.APPLICATION]
         self.assertEqual(dhcp_layer.data, {
             "operation": BOOTPOpCode.BOOTREQUEST,
             "message_type": DHCPMessageType.DHCPREQUEST,
@@ -64,7 +64,7 @@ class TestDHCP(unittest.TestCase):
         })
 
     def test_dhcp_ack(self) -> None:
-        dhcp_layer = self.parsed_packets[3].layers[LayerType.APPLICATION]
+        dhcp_layer = self.parsed_packets[3].layers[LayerLevel.APPLICATION]
         self.assertEqual(dhcp_layer.data, {
             "operation": BOOTPOpCode.BOOTREPLY,
             "message_type": DHCPMessageType.DHCPACK,
