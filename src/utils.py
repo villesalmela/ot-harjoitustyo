@@ -1,4 +1,6 @@
 from numbers import Number
+from enum import Enum
+import json
 
 
 def preprocess_data(data):
@@ -7,6 +9,9 @@ def preprocess_data(data):
     Recursively process nested data: decode bytes to UTF-8 strings, convert numbers to integers or
     floats.
     """
+
+    if isinstance(data, Enum):
+        return data
     if isinstance(data, dict):
         # Recursively apply transformations to each key-value pair in the dictionary
         data = {preprocess_data(key): preprocess_data(value) for key, value in data.items()}
@@ -31,3 +36,10 @@ def preprocess_data(data):
             data = float(data)
 
     return data
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Enum):
+            return o.name
+        return super().default(o)
