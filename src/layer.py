@@ -2,7 +2,7 @@ from typing import Self
 import json
 
 from layer_config import LayerConfig
-from utils import preprocess_data
+from utils import preprocess_data, JSONEncoder
 
 
 class Layer:
@@ -14,8 +14,9 @@ class Layer:
         self.data = preprocess_data(config.data)
 
     def __str__(self) -> str:
+        data = json.dumps(self.data, cls=JSONEncoder, indent=4)
         return f"name = {self.name}\n" + f"size_total = {self.size_total}\n" + \
-            f"size_payload = {self.size_payload}\n" + f"data = {json.dumps(self.data, indent=4)}\n"
+            f"size_payload = {self.size_payload}\n" + f"data = {data}\n"
 
     def __eq__(self, value: Self) -> bool:
         if not isinstance(value, Layer):
