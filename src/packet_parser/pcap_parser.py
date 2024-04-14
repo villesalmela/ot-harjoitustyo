@@ -10,14 +10,14 @@ from scapy.layers.dhcp import DHCP, BOOTP
 from scapy.utils import rdpcap
 
 from components.packet import Packet as myPacket
-from layers.layer_level import LayerLevel
 from components.layer import Layer
+from layers.layer_level import LayerLevel
 from layers.ethernet import Ethernet as myEthernet
 from layers.ip import IP as myIP
 from layers.tcp import TCP as myTCP
 from layers.udp import UDP as myUDP
-from parser.dns_parser import DNSParser
-from parser.dhcp_parser import DHCPParser
+from packet_parser.dns_parser import DNSParser
+from packet_parser.dhcp_parser import DHCPParser
 
 
 class PcapParser:
@@ -25,7 +25,6 @@ class PcapParser:
     def __init__(self) -> None:
         self.raw_packets = []
         self.parsed_packets = []
-
 
     def parse_pcap(self, filename: str) -> list[myPacket]:
         raw_packets = rdpcap(filename)
@@ -46,26 +45,23 @@ class PcapParser:
 
         return parsed_packets
 
-
     @staticmethod
     def parse_ether(ether_layer: Ether) -> tuple[myEthernet, int, int]:
-        return myEthernet(ether_layer.src, ether_layer.dst), len(ether_layer), len(ether_layer.payload)
-
+        return myEthernet(
+            ether_layer.src, ether_layer.dst), len(ether_layer), len(
+            ether_layer.payload)
 
     @staticmethod
     def parse_ip(ip_layer: IP) -> tuple[myIP, int, int]:
         return myIP(ip_layer.src, ip_layer.dst), len(ip_layer), len(ip_layer.payload)
 
-
     @staticmethod
     def parse_tcp(tcp_layer: TCP) -> tuple[myTCP, int, int]:
         return myTCP(tcp_layer.sport, tcp_layer.dport), len(tcp_layer), len(tcp_layer.payload)
 
-
     @staticmethod
     def parse_udp(udp_layer: UDP) -> tuple[myUDP, int, int]:
         return myUDP(udp_layer.sport, udp_layer.dport), len(udp_layer), len(udp_layer.payload)
-
 
     @classmethod
     def parse_link(cls, packet: Packet) -> Layer | None:
@@ -73,13 +69,11 @@ class PcapParser:
             return Layer(*cls.parse_ether(packet[Ether]))
         return None
 
-
     @classmethod
     def parse_network(cls, packet: Packet) -> Layer | None:
         if IP in packet:
             return Layer(*cls.parse_ip(packet[IP]))
         return None
-
 
     @classmethod
     def parse_transport(cls, packet: Packet) -> Layer | None:
@@ -88,7 +82,6 @@ class PcapParser:
         if UDP in packet:
             return Layer(*cls.parse_udp(packet[UDP]))
         return None
-
 
     @staticmethod
     def parse_application(packet: Packet) -> Layer | None:

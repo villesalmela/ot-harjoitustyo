@@ -14,7 +14,8 @@ class DNSAnalyzer:
         counter = Counter()
         for packet in packets:
             dns_layer = packet.layers[LayerLevel.APPLICATION]
-            if dns_layer and dns_layer.name == "DNS" and dns_layer.data["direction"] == DNSDir.QUERY:
+            if dns_layer and dns_layer.name == "DNS"\
+                    and dns_layer.data["direction"] == DNSDir.QUERY:
                 fqdn = dns_layer.data["name"].strip(".")
                 domain = extract_2ld(fqdn)
                 counter[domain] += 1

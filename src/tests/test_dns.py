@@ -1,6 +1,6 @@
 import unittest
 
-from parser.pcap_parser import PcapParser
+from packet_parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from utils.utils import extract_2ld
 from layers.layer_level import LayerLevel

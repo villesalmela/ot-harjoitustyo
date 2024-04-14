@@ -48,16 +48,19 @@ classes: {
 }
 
 # Objects
-UI: {
+ui: {
   class: package
+  PcapUi: {
+    class: class
+  }
 }
-Analyzer: {
+analyzer: {
   class: package
   DNSAnalyzer: {
     class: class
   }
 }
-Parser: {
+packet_parser: {
   class: package
   PcapParser: {
     class: class
@@ -75,7 +78,7 @@ Parser: {
     class: dependency
   }
 }
-Components: {
+components: {
   class: package
   Layer: {
     class: class
@@ -87,7 +90,7 @@ Components: {
     class: composition
   }
 }
-\"Layers": {
+\"layers": {
   LayerLevel -> LayerConfig: {
     class: composition
   }
@@ -156,23 +159,18 @@ Components: {
     }
   }
 }
-UI: {
-  PcapUi: {
-    class: class
-  }
-}
 
 # Inter-container links
-Parser -> Components: {
+packet_parser -> components: {
   class: dependency
 }
-Analyzer -> Components: {
+analyzer -> components: {
   class: dependency
 }
-\"Layers".LayerConfig -> Components.Layer: {
+\"layers".LayerConfig -> components.Layer: {
   class: composition
 }
-Parser -- UI -- Analyzer
+packet_parser -- ui -- analyzer
 
 # Explaining colors
 Legend: {

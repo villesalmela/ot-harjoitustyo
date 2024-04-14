@@ -25,8 +25,8 @@ class DNSParser:
     def parse_dns_answers(dns_layer) -> list[dict[str, str | int]]:
         """Generated with ChatGPT.
 
-        Parse DNS answers from a Scapy DNS layer object to extract answer fields and their values in a
-        dictionary.
+        Parse DNS answers from a Scapy DNS layer object to extract answer fields and their values in
+        a dictionary.
 
         :param dns_layer: Scapy DNS response object
         :return: dictionary containing answer fields and their values

@@ -40,6 +40,7 @@ def preprocess_data(data):
 
     return data
 
+
 def extract_2ld(fqdn):
     """Generated with ChatGPT.
 

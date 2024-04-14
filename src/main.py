@@ -1,6 +1,6 @@
 import json
 
-from parser.pcap_parser import PcapParser
+from packet_parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from ui import ui
 

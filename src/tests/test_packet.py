@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 
 
-from parser.pcap_parser import PcapParser
+from packet_parser.pcap_parser import PcapParser
 from layers.layer_level import LayerLevel
 
 
