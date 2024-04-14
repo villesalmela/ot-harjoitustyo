@@ -1,7 +1,7 @@
-from enum import IntEnum
+from enum import Enum
 
 
-class DHCPMessageType(IntEnum):
+class DHCPMessageType(Enum):
     "Generated with ChatGPT."
     DHCPDISCOVER = 1
     DHCPOFFER = 2

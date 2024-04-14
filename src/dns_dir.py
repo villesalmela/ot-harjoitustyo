@@ -1,6 +1,6 @@
-from enum import IntEnum
+from enum import Enum
 
 
-class DNSDir(IntEnum):
+class DNSDir(Enum):
     QUERY = 0
     RESPONSE = 1

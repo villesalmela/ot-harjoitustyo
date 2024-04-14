@@ -1,9 +1,9 @@
 "Generated with ChatGPT"
 
-from enum import IntEnum
+from enum import Enum
 
 
-class DNSQType(IntEnum):
+class DNSQType(Enum):
     A = 1             # IPv4 address
     NS = 2            # Name server
     MD = 3            # Mail destination (Obsolete - use MX)

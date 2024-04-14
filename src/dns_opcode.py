@@ -1,9 +1,9 @@
 "Generated with ChatGPT"
 
-from enum import IntEnum
+from enum import Enum
 
 
-class DNSOpCode(IntEnum):
+class DNSOpCode(Enum):
     QUERY = 0         # Standard query (RFC 1035)
     IQUERY = 1        # Inverse query (deprecated by RFC 3425)
     STATUS = 2        # Server status request (RFC 1035)
