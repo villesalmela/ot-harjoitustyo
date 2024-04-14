@@ -1,8 +1,8 @@
 from typing import Self
 import json
 
-from layer_config import LayerConfig
-from utils import preprocess_data, JSONEncoder
+from layers.layer_config import LayerConfig
+from utils.utils import preprocess_data, JSONEncoder
 
 
 class Layer:

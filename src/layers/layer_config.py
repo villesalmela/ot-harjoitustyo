@@ -1,5 +1,5 @@
 from typing import Any
-from layer_type import LayerType
+from properties.layer_type import LayerType
 
 
 class LayerConfig:

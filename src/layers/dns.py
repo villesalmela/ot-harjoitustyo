@@ -1,8 +1,8 @@
-from layer_config import LayerConfig
-from layer_type import LayerType
-from dns_dir import DNSDir
-from dns_opcode import DNSOpCode
-from dns_qtype import DNSQType
+from layers.layer_config import LayerConfig
+from properties.layer_type import LayerType
+from properties.dns_dir import DNSDir
+from properties.dns_opcode import DNSOpCode
+from properties.dns_qtype import DNSQType
 
 
 class DNS(LayerConfig):

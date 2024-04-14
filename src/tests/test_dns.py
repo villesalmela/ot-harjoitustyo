@@ -1,18 +1,21 @@
 import unittest
 
-from main import parse_pcap, count_dns_domains, extract_2ld
-from layer_type import LayerType
-from dns_dir import DNSDir
-from dns_opcode import DNSOpCode
-from dns_qtype import DNSQType
+from parser.pcap_parser import PcapParser
+from analyzer.dns_analyzer import DNSAnalyzer
+from utils.utils import extract_2ld
+from properties.layer_type import LayerType
+from properties.dns_dir import DNSDir
+from properties.dns_opcode import DNSOpCode
+from properties.dns_qtype import DNSQType
 
 
 class TestDNS(unittest.TestCase):
     def setUp(self) -> None:
-        self.parsed_packets = parse_pcap("assets/dns.pcap")
+        parser = PcapParser()
+        self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
 
     def test_count_dns_domains(self) -> None:
-        domain_counts = count_dns_domains(self.parsed_packets)
+        domain_counts = DNSAnalyzer.count_dns_domains(self.parsed_packets)
         self.assertEqual(domain_counts["google.com"], 5)
         self.assertEqual(domain_counts["isc.org"], 2)
 

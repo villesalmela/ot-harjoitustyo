@@ -1,15 +1,16 @@
 import unittest
 
-from main import parse_pcap
-from layer_type import LayerType
-from dhcp_message_type import DHCPMessageType
-from bootp_opcode import BOOTPOpCode
+from parser.pcap_parser import PcapParser
+from properties.layer_type import LayerType
+from properties.dhcp_message_type import DHCPMessageType
+from properties.bootp_opcode import BOOTPOpCode
 
 
 class TestDHCP(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.parsed_packets = parse_pcap("assets/dhcp.pcap")
+        parser = PcapParser()
+        self.parsed_packets = parser.parse_pcap("assets/dhcp.pcap")
 
     def test_dhcp_discover(self) -> None:
         dhcp_layer = self.parsed_packets[0].layers[LayerType.APPLICATION]

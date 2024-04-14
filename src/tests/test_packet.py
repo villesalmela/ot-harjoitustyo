@@ -1,14 +1,16 @@
 import unittest
 from datetime import datetime
 
-from main import parse_pcap
-from layer_type import LayerType
+
+from parser.pcap_parser import PcapParser
+from properties.layer_type import LayerType
 
 
 class TestPacket(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.parsed_packets = parse_pcap("assets/dns.pcap")
+        parser = PcapParser()
+        self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
 
     def test_packet(self) -> None:
         packet = self.parsed_packets[0]
