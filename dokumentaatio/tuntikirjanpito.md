@@ -11,4 +11,4 @@
 | 13.4. | 3    | refactorointia ja testejä |
 | 14.4. | 3    | tuki DHCP paketeille |
 | 15.4. | 2    | restructing and UML |
-| summa | 29   | |
+| summa | 31   | |
