@@ -4,6 +4,9 @@ from enum import Enum
 
 
 class DNSQType(Enum):
+
+
+    UNKNOWN = 0  
     A = 1             # IPv4 address
     NS = 2            # Name server
     MD = 3            # Mail destination (Obsolete - use MX)
@@ -68,4 +71,15 @@ class DNSQType(Enum):
     ZONEMD = 63       # Message Digest for DNS Zone
     SVCB = 64         # Service Binding
     HTTPS = 65        # HTTPS Binding
+    TKEY = 249        # Transaction Key
+    TSIG = 250        # Transaction Signature
+    IXFR = 251        # Incremental zone transfer
+    AXFR = 252        # Transfer of an entire zone
     ANY = 255         # Wildcard match
+    URI = 256         # URI
+    CAA = 257         # Certification Authority Authorization
+    
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN
