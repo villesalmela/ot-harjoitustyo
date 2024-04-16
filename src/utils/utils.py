@@ -11,6 +11,8 @@ def preprocess_data(data):
     floats.
     """
 
+    allowed_types = (dict, list, str, Enum, int, float, type(None))
+
     if isinstance(data, Enum):
         return data
     if isinstance(data, dict):
@@ -37,6 +39,10 @@ def preprocess_data(data):
         except (ValueError, TypeError, OverflowError, NotImplementedError):
             # If conversion to int fails, fall back to float
             data = float(data)
+    if not isinstance(data, allowed_types):
+        # If the data type is not in the allowed types, convert it to a string
+        print(f"Encountered unexpected data type: {type(data)}, {data=}")
+        data = str(data)
 
     return data
 
@@ -50,7 +56,7 @@ def extract_2ld(fqdn):
     """
 
     if not fqdn:
-        raise ValueError("FQDN is empty")
+        return ""
 
     # First try with tldextract
     extracted = tldextract.extract(fqdn)
