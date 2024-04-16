@@ -85,10 +85,13 @@ class PcapParser:
 
     @staticmethod
     def parse_application(packet: Packet) -> Layer | None:
-        if DNS in packet:
-            return Layer(*DNSParser.parse_dns(packet[DNS]))
-        if DHCP in packet and BOOTP in packet:
-            dhcp_layer = packet[DHCP]
-            bootp_layer = packet[BOOTP]
-            return Layer(*DHCPParser.parse_dhcp(bootp_layer, dhcp_layer))
+        try:
+            if DNS in packet:
+                return Layer(*DNSParser.parse_dns(packet[DNS]))
+            if DHCP in packet and BOOTP in packet:
+                dhcp_layer = packet[DHCP]
+                bootp_layer = packet[BOOTP]
+                return Layer(*DHCPParser.parse_dhcp(bootp_layer, dhcp_layer))
+        except Exception as e:
+            print(f"Error parsing application layer: {e}")
         return None

@@ -12,6 +12,8 @@ class DNSParser:
     def parse_dns(cls, dns_layer: DNS) -> tuple[myDNS, int, int]:
         if DNSDir(dns_layer.qr) == DNSDir.RESPONSE:
             answers = cls.parse_dns_answers(dns_layer)
+            if not answers:
+                answers = None
         else:
             answers = None
         return myDNS(
@@ -39,7 +41,4 @@ class DNSParser:
             answer_rr = answer_rr.payload  # Move to the next answer, if any
             if not answer_rr:  # Stop if no more answers
                 break
-        for answer in answers:
-            for key, value in answer.items():
-                answer[key] = value
         return answers
