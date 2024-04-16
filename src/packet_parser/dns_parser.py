@@ -2,6 +2,7 @@ from scapy.layers.dns import DNS
 from layers.properties.dns_dir import DNSDir
 from layers.properties.dns_opcode import DNSOpCode
 from layers.properties.dns_qtype import DNSQType
+from layers.properties.dns_rcode import DNSRCode
 from layers.dns import DNS as myDNS
 
 
@@ -16,7 +17,7 @@ class DNSParser:
         return myDNS(
             dns_layer.id,
             DNSDir(dns_layer.qr), DNSOpCode(dns_layer.opcode),
-            DNSQType(dns_layer.qd.qtype),
+            DNSQType(dns_layer.qd.qtype), DNSRCode(dns_layer.rcode),
             dns_layer.qd.qname,
             answers
         ), len(dns_layer), len(dns_layer.payload)

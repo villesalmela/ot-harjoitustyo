@@ -3,6 +3,7 @@ from layers.layer_level import LayerLevel
 from layers.properties.dns_dir import DNSDir
 from layers.properties.dns_opcode import DNSOpCode
 from layers.properties.dns_qtype import DNSQType
+from layers.properties.dns_rcode import DNSRCode
 
 
 class DNS(LayerConfig):
@@ -11,6 +12,7 @@ class DNS(LayerConfig):
                  direction: DNSDir,
                  opcode: DNSOpCode,
                  qtype: DNSQType,
+                 rcode: DNSRCode,
                  name: str,
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
@@ -20,6 +22,7 @@ class DNS(LayerConfig):
             "direction": direction,
             "opcode": opcode,
             "qtype": qtype,
+            "rcode": rcode,
             "name": name,
             "answers": answers
         })
