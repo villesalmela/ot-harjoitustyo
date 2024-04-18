@@ -13,7 +13,7 @@ class DNS(LayerConfig):
                  opcode: DNSOpCode,
                  qtype: DNSQType,
                  rcode: DNSRCode,
-                 name: str,
+                 qname: str,
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
 
@@ -23,6 +23,6 @@ class DNS(LayerConfig):
             "opcode": opcode,
             "qtype": qtype,
             "rcode": rcode,
-            "name": name,
+            "qname": qname,
             "answers": answers
         })

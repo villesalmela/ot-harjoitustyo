@@ -5,8 +5,7 @@ from enum import Enum
 
 class DNSQType(Enum):
 
-
-    UNKNOWN = 0  
+    UNKNOWN = 0
     A = 1             # IPv4 address
     NS = 2            # Name server
     MD = 3            # Mail destination (Obsolete - use MX)
@@ -78,7 +77,6 @@ class DNSQType(Enum):
     ANY = 255         # Wildcard match
     URI = 256         # URI
     CAA = 257         # Certification Authority Authorization
-    
 
     @classmethod
     def _missing_(cls, value):
