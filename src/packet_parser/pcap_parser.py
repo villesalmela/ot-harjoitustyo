@@ -33,10 +33,13 @@ class PcapParser:
         for packet in raw_packets:
 
             parsed_packet = myPacket(datetime.fromtimestamp(float(packet.time)), len(packet))
-            parsed_packet.layers[LayerLevel.LINK] = self.parse_link(packet)
-            parsed_packet.layers[LayerLevel.NETWORK] = self.parse_network(packet)
-            parsed_packet.layers[LayerLevel.TRANSPORT] = self.parse_transport(packet)
-            parsed_packet.layers[LayerLevel.APPLICATION] = self.parse_application(packet)
+            link_layer = self.parse_link(packet)
+            network_layer = self.parse_network(packet)
+            transport_layer = self.parse_transport(packet)
+            application_layer = self.parse_application(packet)
+            for layer in [link_layer, network_layer, transport_layer, application_layer]:
+                if layer:
+                    parsed_packet.add_layer(layer)
 
             parsed_packets.append(parsed_packet)
 
