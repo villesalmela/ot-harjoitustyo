@@ -62,8 +62,8 @@ class PcapUi(tk.Tk):
         self.tab2 = ttk.Frame(self.notebook)
 
         # Add tabs to the notebook
-        self.notebook.add(self.tab1, text='Text')
-        self.notebook.add(self.tab2, text='Graph')
+        self.notebook.add(self.tab1, text='Details')
+        self.notebook.add(self.tab2, text='DNS')
 
         # Pack to make visible
         self.notebook.pack(expand=True, fill=tk.BOTH)
@@ -74,8 +74,8 @@ class PcapUi(tk.Tk):
         # Prepare tab 2
         figure_id = self.create_figure_and_canvas(self.tab2)
 
-        self.dns_plot_id = self.create_plot(figure_id, 211)
-        self.other_plot_id = self.create_plot(figure_id, 212)
+        self.dns_plot_id_1 = self.create_plot(figure_id, 211)
+        self.dns_plot_id_2 = self.create_plot(figure_id, 212)
 
     def create_scrollable_text_area(self, container):
 
@@ -144,12 +144,18 @@ class PcapUi(tk.Tk):
         file_path = filedialog.askopenfilename()
 
         if file_path:  # file selected
-            produced_text, dns_stats = self.process_file(file_path)
+            produced_text, dns_most_queried_domains, dns_most_common_servers = self.process_file(
+                file_path)
             self.display_text(
                 text_area_id=self.summary_text_area_id, text=produced_text)
-            self.display_bar_graph(plot_id=self.dns_plot_id, data=dns_stats,
-                                   title="DNS Domain Counts", xlabel="Count", ylabel="Domain")
-            self.display_bar_graph(plot_id=self.other_plot_id, data=dns_stats)
+            self.display_bar_graph(
+                plot_id=self.dns_plot_id_1,
+                data=dns_most_queried_domains,
+                title="Most queried domains (grouped by 2LD)",
+                xlabel="Count",
+                ylabel="Domain")
+            self.display_bar_graph(plot_id=self.dns_plot_id_2, data=dns_most_common_servers,
+                                   title="Most used DNS servers", xlabel="Count", ylabel="Server")
         else:  # no file selected
             pass
 

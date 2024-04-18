@@ -5,7 +5,7 @@ from analyzer.dns_analyzer import DNSAnalyzer
 from ui import ui
 
 
-def analyze_pcap(filename: str) -> tuple[str, dict[str, int]]:
+def analyze_pcap(filename: str) -> tuple[str, dict[str, int], dict[str, int]]:
     out = ""
     # Parse the PCAP file
     parser = PcapParser()
@@ -18,10 +18,13 @@ def analyze_pcap(filename: str) -> tuple[str, dict[str, int]]:
     # Summary
     out += "\n### SUMMARY ###\n"
     out += f"Total packets: {len(parsed_packets)}\n"
-    dns_stats = DNSAnalyzer.count_dns_domains(parsed_packets)
-    out += f"Count of DNS queries by FQDN: {json.dumps(dns_stats, indent=4)}"
+    dns_analyzer = DNSAnalyzer(parsed_packets)
+    dns_most_queried_domains = dns_analyzer.most_queried_domains()
+    dns_most_common_servers = dns_analyzer.most_common_servers()
+    out += f"Count of DNS queries by FQDN: {json.dumps(dns_most_queried_domains, indent=4)}\n"
+    out += f"Most common DNS servers: {json.dumps(dns_most_common_servers, indent=4)}\n"
 
-    return out, dns_stats
+    return out, dns_most_queried_domains, dns_most_common_servers
 
 
 if __name__ == '__main__':
