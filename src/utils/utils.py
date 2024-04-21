@@ -11,17 +11,17 @@ def preprocess_data(data):
     floats.
     """
 
-    allowed_types = (dict, list, str, Enum, int, float, type(None))
+    allowed_types = (dict, list, str, int, float)
 
-    if isinstance(data, Enum):
+    if isinstance(data, (Enum, bool, type(None))):
         return data
     if isinstance(data, dict):
         # Recursively apply transformations to each key-value pair in the dictionary
         data = {preprocess_data(key): preprocess_data(value) for key, value in data.items()}
-    if isinstance(data, list):
+    elif isinstance(data, list):
         # Apply transformations to each item in the list
         data = [preprocess_data(item) for item in data]
-    if isinstance(data, bytes):
+    elif isinstance(data, bytes):
         data = data.strip(b"\x00")
         try:
             # Attempt to decode bytes to a UTF-8 string
@@ -29,7 +29,7 @@ def preprocess_data(data):
         except UnicodeDecodeError:
             # Return hexadecimal representation if decoding fails
             data = data.hex()
-    if isinstance(data, Number):
+    elif isinstance(data, Number):
         try:
             # Attempt conversion to int if it matches exactly
             if data == int(data):
@@ -40,9 +40,11 @@ def preprocess_data(data):
             # If conversion to int fails, fall back to float
             data = float(data)
     if not isinstance(data, allowed_types):
-        # If the data type is not in the allowed types, convert it to a string
-        print(f"Encountered unexpected data type: {type(data)}, {data=}")
-        data = str(data)
+        try:
+            # If the data type is not in the allowed types, convert it to a string
+            data = str(data)
+        except Exception as e:
+            raise ValueError(f"Unsupported data type: {type(data)}: {repr(data)}") from e
 
     return data
 
