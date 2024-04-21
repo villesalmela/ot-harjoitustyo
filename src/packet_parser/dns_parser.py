@@ -10,6 +10,12 @@ class DNSParser:
 
     @classmethod
     def parse_dns(cls, dns_layer: DNS) -> tuple[myDNS, int, int]:
+        if dns_layer.qd:
+            qtype = DNSQType(dns_layer.qd.qtype)
+            qname = dns_layer.qd.qname
+        else:
+            qtype = None
+            qname = None
         if DNSDir(dns_layer.qr) == DNSDir.RESPONSE:
             answers = cls.parse_dns_answers(dns_layer)
             if not answers:
@@ -19,8 +25,8 @@ class DNSParser:
         return myDNS(
             dns_layer.id,
             DNSDir(dns_layer.qr), DNSOpCode(dns_layer.opcode),
-            DNSQType(dns_layer.qd.qtype), DNSRCode(dns_layer.rcode),
-            dns_layer.qd.qname,
+            qtype, DNSRCode(dns_layer.rcode),
+            qname,
             answers
         ), len(dns_layer), len(dns_layer.payload)
 
