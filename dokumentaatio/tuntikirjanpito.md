@@ -11,4 +11,13 @@
 | 13.4. | 3    | refactorointia ja testejä |
 | 14.4. | 3    | tuki DHCP paketeille |
 | 15.4. | 2    | restructing and UML |
-| summa | 31   | |
+| 16.4. | 1    | tuki DNS rcodelle |
+| 17.4. | 2    | lisää tukea eri DNS query typeille |
+| 18.4. | 3    | pandas käyttöön datan mankeloinnissa |
+| 18.4. | 2    | paketeille UUID ja uusi graafi käyttöliittymään |
+| 21.4. | 5    | tuki uusille paketeille: ICMP, IPv6, ICMPv6, SLL, ARP, RAW |
+| 21.4. | 1    | lisätty DHCP analyzer
+| 21.4. | 3    | checksum tarkistus, virheenkäsittelyn parannusta, alustava lokitus |
+| 21.4. | 1    | refactorointia, formatointia, testien säätöä |
+| 21.4. | 1    | dokumentaatiota |
+| summa | 50   | |

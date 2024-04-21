@@ -7,9 +7,9 @@
     - UDP
     - DNS
 - Lisätty Enum-tyyppiset luokat numeraalisten arvojen tallentamiseen
-    - DNS QTYPE
-    - DNS OPTYPE
-    - DNS DIRECTION
+    - DNS Query Type
+    - DNS Op Code
+    - DNS Direction
     - LAYER TYPE
 - DNS paketeista parsitaan onnistuneesti link, network, transport ja application -kerroksien tiedot
 - Lisätty yksikkötestejä
@@ -49,3 +49,31 @@
 - Konfiguroitu invoke-taskit 
     - linttaus pylintillä: invoke lint
     - formatointi autopep8 ja docformatterilla: invoke format
+
+# Viikko 5
+- Lisätty luokkia pakettien esittämiseen
+    - ICMP
+    - IPv6
+    - ICMPv6
+    - SLL (Linux cooked-mode capture)
+    - ARP
+    - RAW (esittää raakaa dataa, jonka tyyppiä ei ole tunnistettu)
+- Lisätty Enum-tyyppiset luokat numeraalisten arvojen tallentamiseen
+    - ARP Op Code
+    - Cooked Packet Type
+    - Hardware Type
+    - ICMPv4 Type & Code
+    - ICMPv6 Type & Code
+    - IP Version
+- Analyzer-komponenteissa käyttöön pandas datan käsittelyssä
+- Lisätty toiminnallisuuksia
+    - Käyttäjä voi tarkistaa yhteenvedon, joka sisältää
+        - Yleisimmät asiakkaat DHCP paketeista
+    - Käyttäjä voi katsoa graafista
+        - Yleisimmät DNS-palvelimet DNS paketeista
+- Parannettu pakettien parsintaa
+    - Lisätty virheenkäsittelyä
+    - Lisätty lokitusta
+        - support-loki: tuen vuoksi parsimatta jääneet kerrokset
+        - error-loki: yllättävän virheen vuoksi parsimatta jääneet kerrokset
+        - checksum-loki: mahdollisesti korruptoituneet paketit
