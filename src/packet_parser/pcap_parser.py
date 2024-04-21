@@ -122,9 +122,9 @@ class PcapParser:
 
         # write logs
         Path("logs").mkdir(parents=True, exist_ok=True)
-        Path("logs/support.log").write_text(self.support_log)
-        Path("logs/checksum.log").write_text(self.checksum_log)
-        Path("logs/error.log").write_text(self.error_log)
+        Path("logs/support.log").write_text(self.support_log, encoding="utf-8")
+        Path("logs/checksum.log").write_text(self.checksum_log, encoding="utf-8")
+        Path("logs/error.log").write_text(self.error_log, encoding="utf-8")
         return self.parsed_packets
 
     def parse_ether(self, ether_layer: Ether) -> tuple[myEthernet, int, int]:
@@ -140,13 +140,13 @@ class PcapParser:
 
     def parse_ip(self, packet_number: int, ip_layer: IP | IPv6) -> tuple[myIP, int, int]:
         if isinstance(ip_layer, IP):
-            version = IPVersion.IPv4
+            version = IPVersion.IPV4
             checksum_valid = self.verify_checksum(packet_number, ip_layer)
         elif isinstance(ip_layer, IPv6):
-            version = IPVersion.IPv6
+            version = IPVersion.IPV6
             checksum_valid = None
         else:
-            raise ValueError(f"Unsupported IP version")
+            raise ValueError("Unsupported IP version")
         return myIP(
             version, ip_layer.src, ip_layer.dst, checksum_valid), len(ip_layer), len(
             ip_layer.payload)
@@ -175,11 +175,11 @@ class PcapParser:
 
     def parse_icmp(self, packet_number: int, icmp_layer: ICMP) -> tuple[myICMP, int, int]:
         icmp_type = ICMPType(icmp_layer.type)
-        icmp_code = ICMPCode(icmp_type, icmp_layer.code)
+        icmp_code = ICMPCode((icmp_type, icmp_layer.code))
         identifier = getattr(icmp_layer, "id", None)
         seq = getattr(icmp_layer, "seq", None)
         checksum_valid = self.verify_checksum(packet_number, icmp_layer)
-        return myICMP(ICMPVersion.ICMPv4, icmp_type, icmp_code, seq, identifier,
+        return myICMP(ICMPVersion.ICMPV4, icmp_type, icmp_code, seq, identifier,
                       checksum_valid), len(icmp_layer), len(icmp_layer.payload)
 
     def parse_icmpv6(self, packet_number: int, packet: Packet) -> tuple[myICMP, int, int]:
@@ -188,20 +188,20 @@ class PcapParser:
                 icmp_layer = layer
                 break
         icmp_type = ICMPv6Type(icmp_layer.type)
-        icmp_code = ICMPv6Code(icmp_type, getattr(icmp_layer, "code", None))
+        icmp_code = ICMPv6Code((icmp_type, getattr(icmp_layer, "code", None)))
         identifier = getattr(icmp_layer, "id", None)
         seq = getattr(icmp_layer, "seq", None)
         checksum_valid = self.verify_checksum(packet_number, icmp_layer)
-        return myICMP(ICMPVersion.ICMPv6, icmp_type, icmp_code, seq, identifier,
+        return myICMP(ICMPVersion.ICMPV6, icmp_type, icmp_code, seq, identifier,
                       checksum_valid), len(icmp_layer), len(icmp_layer.payload)
 
     def parse_link(self, packet_number: int, packet: Packet) -> Layer:
         try:
             if Ether in packet:
                 return Layer(*self.parse_ether(packet[Ether]))
-            elif CookedLinux in packet:
+            if CookedLinux in packet:
                 return Layer(*self.parse_sll(packet[CookedLinux]))
-            elif isinstance(packet, (Raw, NoPayload, type(None))):
+            if isinstance(packet, (Raw, NoPayload, type(None))):
                 return Layer(myRaw(LayerLevel.LINK), len(packet), len(packet.payload))
             raise UnsupportedLayerError(packet)
         except Exception as e:
@@ -211,11 +211,11 @@ class PcapParser:
         try:
             if IP in packet:
                 return Layer(*self.parse_ip(packet_number, packet[IP]))
-            elif IPv6 in packet:
+            if IPv6 in packet:
                 return Layer(*self.parse_ip(packet_number, packet[IPv6]))
-            elif ARP in packet:
+            if ARP in packet:
                 return Layer(*self.parse_arp(packet[ARP]))
-            elif isinstance(packet, (Raw, NoPayload, type(None))):
+            if isinstance(packet, (Raw, NoPayload, type(None))):
                 return Layer(myRaw(LayerLevel.NETWORK), len(packet), len(packet.payload))
             raise UnsupportedLayerError(packet)
         except Exception as e:
@@ -225,13 +225,13 @@ class PcapParser:
         try:
             if TCP in packet:
                 return Layer(*self.parse_tcp(packet_number, packet[TCP]))
-            elif UDP in packet:
+            if UDP in packet:
                 return Layer(*self.parse_udp(packet_number, packet[UDP]))
-            elif ICMP in packet:
+            if ICMP in packet:
                 return Layer(*self.parse_icmp(packet_number, packet[ICMP]))
-            elif any([isinstance(layer, (_ICMPv6, _ICMPv6NDGuessPayload)) for layer in packet]):
+            if any(isinstance(layer, (_ICMPv6, _ICMPv6NDGuessPayload)) for layer in packet):
                 return Layer(*self.parse_icmpv6(packet_number, packet))
-            elif isinstance(packet, (Raw, NoPayload, type(None))):
+            if isinstance(packet, (Raw, NoPayload, type(None))):
                 return Layer(myRaw(LayerLevel.TRANSPORT), len(packet), len(packet.payload))
             raise UnsupportedLayerError(packet)
         except Exception as e:
@@ -241,11 +241,11 @@ class PcapParser:
         try:
             if DNS in packet:
                 return Layer(*DNSParser.parse_dns(packet[DNS]))
-            elif DHCP in packet and BOOTP in packet:
+            if DHCP in packet and BOOTP in packet:
                 dhcp_layer = packet[DHCP]
                 bootp_layer = packet[BOOTP]
                 return Layer(*DHCPParser.parse_dhcp(bootp_layer, dhcp_layer))
-            elif isinstance(packet, (Raw, NoPayload, type(None))):
+            if isinstance(packet, (Raw, NoPayload, type(None))):
                 return Layer(myRaw(LayerLevel.APPLICATION), len(packet), len(packet.payload))
             raise UnsupportedLayerError(packet)
         except Exception as e:

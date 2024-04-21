@@ -83,9 +83,9 @@ class ICMPCode(Enum):
     NEED_AUTHORIZATION = (ICMPType.PHOTURIS, 5)
 
     @classmethod
-    def _missing_(cls, key):
-        if isinstance(key, tuple):
-            icmp_type, icmp_code = key
+    def _missing_(cls, value):
+        if isinstance(value, tuple):
+            _, icmp_code = value
             if icmp_code == 0:
                 return cls.NO_CODE
         return cls.UNKNOWN

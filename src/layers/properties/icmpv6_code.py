@@ -35,9 +35,9 @@ class ICMPv6Type(Enum):
     MULTICAST_ROUTER_ADVERTISEMENT = 151
     MULTICAST_ROUTER_SOLICITATION = 152
     MULTICAST_ROUTER_TERMINATION = 153
-    FMIPv6_MESSAGES = 154
+    FMIPV6_MESSAGES = 154
     RPL_CONTROL_MESSAGE = 155
-    ILNPv6_LOCATOR_UPDATE_MESSAGE = 156
+    ILNPV6_LOCATOR_UPDATE_MESSAGE = 156
     DUPLICATE_ADDRESS_REQUEST = 157
     DUPLICATE_ADDRESS_CONFIRMATION = 158
     MPL_CONTROL_MESSAGE = 159
@@ -125,9 +125,9 @@ class ICMPv6Code(Enum):
     MULTIPLE_INTERFACES_SATISFY_QUERY = (ICMPv6Type.EXTENDED_ECHO_REPLY, 4)
 
     @classmethod
-    def _missing_(cls, key):
-        if isinstance(key, tuple):
-            icmp_type, icmp_code = key
+    def _missing_(cls, value):
+        if isinstance(value, tuple):
+            _, icmp_code = value
             if icmp_code is None or icmp_code == 0:
                 return cls.NO_CODE
         return cls.UNKNOWN

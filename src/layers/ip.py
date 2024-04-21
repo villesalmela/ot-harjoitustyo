@@ -11,13 +11,13 @@ class IP(LayerConfig):
             dst_addr: str,
             checksum_valid: bool | None) -> None:
 
-        if version == IPVersion.IPv4:
+        if version == IPVersion.IPV4:
             super().__init__(LayerLevel.NETWORK, version.name, {
                 "src_addr": src_addr,
                 "dst_addr": dst_addr,
                 "checksum_valid": checksum_valid
             })
-        elif version == IPVersion.IPv6:
+        elif version == IPVersion.IPV6:
             super().__init__(LayerLevel.NETWORK, version.name, {
                 "src_addr": src_addr,
                 "dst_addr": dst_addr

@@ -1,8 +1,9 @@
+import pandas as pd
+
 from components.packet import Packet as myPacket
 from layers.layer_level import LayerLevel
 from layers.properties.dns_dir import DNSDir
 from utils.utils import extract_2ld, flatten_dict
-import pandas as pd
 
 
 class DNSAnalyzer:
