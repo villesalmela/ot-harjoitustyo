@@ -11,9 +11,9 @@ class DNS(LayerConfig):
                  transaction_id: int,
                  direction: DNSDir,
                  opcode: DNSOpCode,
-                 qtype: DNSQType,
+                 qtype: DNSQType | None,
                  rcode: DNSRCode,
-                 qname: str,
+                 qname: str | None,
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
 
