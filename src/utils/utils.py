@@ -131,3 +131,11 @@ def flatten_dict(d, parent_key='', sep='.'):
         process_item(key, val, parent_key)
 
     return dict(items)
+
+
+def convert_mac(mac):
+    """Generated with ChatGPT.
+
+    Convert a MAC address to a colon-separated hexadecimal string.
+    """
+    return ":".join([f"{int(byte):02x}" for byte in mac.strip(b"\x00")])

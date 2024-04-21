@@ -2,6 +2,7 @@ from scapy.layers.dhcp import DHCP, BOOTP
 from layers.dhcp import DHCP as myDHCP
 from layers.properties.dhcp_message_type import DHCPMessageType
 from layers.properties.bootp_opcode import BOOTPOpCode
+from utils.utils import convert_mac
 
 
 class DHCPParser:
@@ -16,13 +17,6 @@ class DHCPParser:
                         return value
                     return value
             return ""
-
-        def convert_mac(mac):
-            """Generated with ChatGPT.
-
-            Convert a MAC address to a colon-separated hexadecimal string.
-            """
-            return ":".join([f"{int(byte):02x}" for byte in mac.strip(b"\x00")])
 
         client_data = {
             "mac": convert_mac(bootp_layer.chaddr),
