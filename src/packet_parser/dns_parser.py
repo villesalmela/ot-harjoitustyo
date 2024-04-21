@@ -18,14 +18,17 @@ class DNSParser:
             qname = None
         if DNSDir(dns_layer.qr) == DNSDir.RESPONSE:
             answers = cls.parse_dns_answers(dns_layer)
+            rcode = DNSRCode(dns_layer.rcode)
             if not answers:
                 answers = None
         else:
             answers = None
+            rcode = None
         return myDNS(
             dns_layer.id,
             DNSDir(dns_layer.qr), DNSOpCode(dns_layer.opcode),
-            qtype, DNSRCode(dns_layer.rcode),
+            qtype,
+            rcode,
             qname,
             answers
         ), len(dns_layer), len(dns_layer.payload)

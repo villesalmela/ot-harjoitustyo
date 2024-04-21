@@ -12,7 +12,7 @@ class DNS(LayerConfig):
                  direction: DNSDir,
                  opcode: DNSOpCode,
                  qtype: DNSQType | None,
-                 rcode: DNSRCode,
+                 rcode: DNSRCode | None,
                  qname: str | None,
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
