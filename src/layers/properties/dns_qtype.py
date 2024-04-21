@@ -5,7 +5,7 @@ from enum import Enum
 
 class DNSQType(Enum):
 
-    UNKNOWN = 0
+    UNKNOWN = None
     A = 1             # IPv4 address
     NS = 2            # Name server
     MD = 3            # Mail destination (Obsolete - use MX)

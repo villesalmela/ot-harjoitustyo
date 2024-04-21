@@ -3,6 +3,7 @@ from enum import Enum
 
 class DHCPMessageType(Enum):
     "Generated with ChatGPT."
+    UNKNOWN = None
     DHCPDISCOVER = 1
     DHCPOFFER = 2
     DHCPREQUEST = 3
@@ -11,3 +12,7 @@ class DHCPMessageType(Enum):
     DHCPNAK = 6
     DHCPRELEASE = 7
     DHCPINFORM = 8
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN

@@ -4,6 +4,7 @@ from enum import Enum
 
 
 class DNSOpCode(Enum):
+    UNKNOWN = None
     QUERY = 0         # Standard query (RFC 1035)
     IQUERY = 1        # Inverse query (deprecated by RFC 3425)
     STATUS = 2        # Server status request (RFC 1035)
@@ -12,3 +13,7 @@ class DNSOpCode(Enum):
     UPDATE = 5        # Update (RFC 2136)
     STATEFUL = 6      # DNS Stateful Operations (DSO) (RFC 8490)
     # Opcodes 7-15 are reserved for future use
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN
