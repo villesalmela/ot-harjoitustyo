@@ -42,4 +42,5 @@ class DHCPAnalyzer:
         if not self.packets:
             return {}
         clients_df = self.dhcp_df[(self.dhcp_df["data.client_hostname"] != "")]
-        return clients_df.groupby(["data.client_hostname", "data.client_mac"]).size().head(n).to_dict()
+        return clients_df.groupby(
+            ["data.client_hostname", "data.client_mac"]).size().head(n).to_dict()
