@@ -83,6 +83,17 @@ class JSONEncoder(json.JSONEncoder):
             return o.name
         return super().default(o)
 
+    def tuple_to_string(self, value):
+        if isinstance(value, tuple):
+            return f"({", ".join(str(k) for k in value)})"
+        return value
+
+    def encode(self, o):
+        if isinstance(o, dict):
+            # Convert tuple keys to strings
+            return super().encode({self.tuple_to_string(k): v for k, v in o.items()})
+        return super().encode(o)
+
 
 def flatten_dict(d, parent_key='', sep='.'):
     """Generated with ChatGPT."""
