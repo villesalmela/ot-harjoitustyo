@@ -7,17 +7,19 @@ from layers.layer_level import LayerLevel
 from layers.properties.dns_dir import DNSDir
 from layers.properties.dns_opcode import DNSOpCode
 from layers.properties.dns_qtype import DNSQType
+from layers.properties.dns_rcode import DNSRCode
 
 
 class TestDNS(unittest.TestCase):
     def setUp(self) -> None:
         parser = PcapParser()
         self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
+        self.analyzer = DNSAnalyzer(self.parsed_packets)
 
     def test_count_dns_domains(self) -> None:
-        domain_counts = DNSAnalyzer.count_dns_domains(self.parsed_packets)
-        self.assertEqual(domain_counts["google.com"], 5)
-        self.assertEqual(domain_counts["isc.org"], 2)
+        domain_counts = self.analyzer.most_queried_domains()
+        self.assertEqual(domain_counts["google.com"], 10)
+        self.assertEqual(domain_counts["isc.org"], 4)
 
     def test_dns_layer_query_data(self) -> None:
         dns_layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
@@ -26,7 +28,8 @@ class TestDNS(unittest.TestCase):
             "direction": DNSDir.QUERY,
             "opcode": DNSOpCode.QUERY,
             "qtype": DNSQType.TXT,
-            "name": "google.com.",
+            "rcode": None,
+            "qname": "google.com.",
             "answers": None
         })
 
@@ -37,7 +40,8 @@ class TestDNS(unittest.TestCase):
             "direction": DNSDir.RESPONSE,
             "opcode": DNSOpCode.QUERY,
             "qtype": DNSQType.TXT,
-            "name": "google.com.",
+            "rcode": DNSRCode.NOERROR,
+            "qname": "google.com.",
             "answers": [{'rrname': 'google.com.',
                          'type': 16,
                          'rclass': 1,
@@ -59,8 +63,7 @@ class TestDNS(unittest.TestCase):
         self.assertEqual(domain, "localhost")
 
     def test_2ld_extraction_fallback_empty(self) -> None:
-        with self.assertRaises(ValueError):
-            extract_2ld("")
+        self.assertEqual(extract_2ld(""), "")
 
     def test_2ld_extraction_fallback_invalid_tld_normal(self) -> None:
         domain = extract_2ld("www.google.invalid")
