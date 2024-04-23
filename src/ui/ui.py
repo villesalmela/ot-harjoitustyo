@@ -3,10 +3,13 @@ from functools import wraps
 import tkinter as tk
 from tkinter import ttk, filedialog, scrolledtext, PhotoImage
 
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import MaxNLocator
+import matplotlib.dates as mdates
 
+from ui.figure_config import FigureConfig
 
 
 def with_loading_screen(func):
@@ -233,6 +236,125 @@ class PcapUi(tk.Tk):
 
         # Make it read-only
         text_area.config(state=tk.DISABLED)
+
+    def display_timeseries_dual(self, plot_id, speed_config: FigureConfig):
+
+        # Fetch the plot and its parent figure
+        plot, figure_id = self.plots[plot_id]
+
+        # Unpacking the configuration
+        title = speed_config.title
+        data1 = speed_config.data1
+        xlabel = speed_config.xlabel
+        y1label = speed_config.y1label
+        color1 = speed_config.color1
+        data2 = speed_config.data2
+        y2label = speed_config.y2label
+        color2 = speed_config.color2
+
+        # Setup general
+        plot_color = color1
+        plot.set_title(title)
+
+        # Bail out if there's not enough data
+        if len(data1) < 2:
+
+            # Generated with ChatGPT
+            plot.text(0.5, 0.5, "Not enough data to plot", horizontalalignment='center',
+                      verticalalignment='center', transform=plot.transAxes, fontsize=14)
+
+            # Draw the text
+            self.canvases[figure_id].draw()
+            return
+
+        # Setup the x-axis
+        plot.set_xlabel(xlabel)
+        plot_locator = mdates.AutoDateLocator()
+        plot_formatter = mdates.ConciseDateFormatter(plot_locator)
+
+        plot.xaxis.set_major_locator(plot_locator)
+        plot.xaxis.set_major_formatter(plot_formatter)
+
+        duration = data1.index[-1] - data1.index[0]
+
+        if duration <= pd.Timedelta(minutes=1):
+            print("Setting minor ticks for seconds")
+            minor_locator = mdates.SecondLocator()
+        elif duration <= pd.Timedelta(hours=1):
+            print("Setting minor ticks for minutes")
+            minor_locator = mdates.MinuteLocator()
+        elif duration <= pd.Timedelta(days=1):
+            print("Setting minor ticks for hours")
+            minor_locator = mdates.HourLocator()
+        elif duration <= pd.Timedelta(days=30):
+            print("Setting minor ticks for days")
+            minor_locator = mdates.DayLocator()
+        elif duration <= pd.Timedelta(days=365):
+            print("Setting minor ticks for months")
+            minor_locator = mdates.MonthLocator()
+        else:
+            print("Setting minor ticks for quarters")
+            minor_locator = mdates.MonthLocator(interval=3)
+
+        plot.xaxis.set_minor_locator(minor_locator)
+
+        # Setup grid
+        plot.grid(which='minor', linestyle='dashed', linewidth='0.5', color='gray')
+        plot.grid(which='major', linestyle='solid', linewidth='1.0', color='black')
+
+        # Setup y-axis
+        plot.set_ylabel(y1label, color=plot_color)
+        plot.fill_between(data1.index, data1, color=plot_color, alpha=0.4)
+        plot.yaxis.grid(False)
+
+        # Setup second plot
+        plot2 = plot.twinx()
+        plot2_color = color2
+        plot2.set_ylabel(y2label, color=plot2_color)
+        plot2.plot(
+            data2.index,
+            data2,
+            color=plot2_color,
+            linestyle='none',
+            marker='o',
+            markersize=1.5)
+
+        # Syncronize the two axes
+        freq = data1.index.freq
+        freqstr = data1.index.freqstr
+
+        if freq == pd.Timedelta('1s'):  # Force same axis for both
+            ymin, ymax = plot2.get_ylim()
+            plot2.set_ylim(0, ymax)
+            plot.set_ylim(0, ymax)
+        else:  # Dynamic, separate, positive axis
+            plot2.set_ylim(bottom=0)
+            plot.set_ylim(bottom=0)
+
+        # Info to display in the infobox
+        interval_length = freqstr
+        interval_count = len(data1)
+
+        # Adding an infobox (Generated with ChatGPT)
+        info_text = f"Interval length: {interval_length}\nInterval count: {interval_count}"
+        plot.text(
+            0.05,
+            0.95,
+            info_text,
+            transform=plot.transAxes,
+            fontsize=12,
+            verticalalignment='top',
+            bbox=dict(
+                boxstyle="round,pad=0.3",
+                facecolor='white',
+                edgecolor='black',
+                alpha=0.5))
+
+        # Adjust layout to make room for the labels if necessary
+        self.figures[figure_id].tight_layout()
+
+        # Refreshing the canvas
+        self.canvases[figure_id].draw()
 
     def display_bar_graph(
         self,
