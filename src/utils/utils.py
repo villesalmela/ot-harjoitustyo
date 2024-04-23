@@ -3,6 +3,7 @@ from enum import Enum
 import json
 from collections import defaultdict
 import tldextract
+import pandas as pd
 
 
 def preprocess_bytes(data):
@@ -160,3 +161,41 @@ def convert_mac(mac):
     Convert a MAC address to a colon-separated hexadecimal string.
     """
     return ":".join([f"{int(byte):02x}" for byte in mac.strip(b"\x00")])
+
+
+def scale_bits(bits: pd.Series | Number):
+    if isinstance(bits, pd.Series):  # Determine the scale based on the maximum value
+        orig_scale = bits.max()
+    else:
+        orig_scale = bits
+    if orig_scale < 1e3:
+        unit = 'bits'
+        scaled_bits = bits
+    elif orig_scale < 1e6:
+        unit = 'Kbits'
+        scaled_bits = bits / 1e3
+    else:
+        unit = 'Mbits'
+        scaled_bits = bits / 1e6
+    return scaled_bits, unit
+
+
+def convert_to_bits(bytes_value):
+    return bytes_value * 8
+
+
+def custom_round(x):
+    "Round to 1, 2, 5 or scaled multiple of 10"
+    if x < 0:
+        raise ValueError
+    if x < 1.5:
+        return 1
+    if x < 2.5:
+        return 2
+    if x < 7.5:
+        return 5
+    if x < 10:
+        return 10
+
+    scale = len(str(x).split('.', maxsplit=1)[0]) - 1
+    return round(x / (10 ** scale)) * (10 ** scale)
