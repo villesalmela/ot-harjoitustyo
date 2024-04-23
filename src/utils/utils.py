@@ -2,8 +2,15 @@ from numbers import Number
 from enum import Enum
 import json
 from collections import defaultdict
+from pathlib import Path
+
 import tldextract
 import pandas as pd
+
+
+# Max size 100 MB
+FILESIZE_LIMIT = 1024 * 1024 * 100  # 1024 b = 1 kb,  1024 kb = 1 Mb
+FILESIZE_LIMIT_STR = "100 MB"
 
 
 def preprocess_bytes(data):
@@ -199,3 +206,18 @@ def custom_round(x):
 
     scale = len(str(x).split('.', maxsplit=1)[0]) - 1
     return round(x / (10 ** scale)) * (10 ** scale)
+
+
+def check_file(filename: str):
+    file = Path(filename)
+    size = file.stat().st_size
+    suffix = file.suffix
+
+    if not (file.exists() and file.is_file()):
+        raise FileNotFoundError(f"File not found: {filename}")
+
+    if suffix != ".pcap":
+        raise FileNotFoundError(f"File must be a PCAP file, not '{suffix}'")
+
+    if size > FILESIZE_LIMIT:
+        raise FileNotFoundError(f"File size exceeds the limit of {FILESIZE_LIMIT_STR}")

@@ -1,7 +1,7 @@
 from threading import Thread
 from functools import wraps
 import tkinter as tk
-from tkinter import ttk, filedialog, scrolledtext, PhotoImage
+from tkinter import ttk, filedialog, scrolledtext, PhotoImage, messagebox
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,6 +10,7 @@ from matplotlib.ticker import MaxNLocator
 import matplotlib.dates as mdates
 
 from ui.figure_config import FigureConfig
+from utils.utils import check_file
 
 
 def with_loading_screen(func):
@@ -206,7 +207,14 @@ class PcapUi(tk.Tk):
         file_path = filedialog.askopenfilename()
 
         if file_path:  # file selected
+            try:
+                check_file(file_path)
+            except FileNotFoundError as e:
+                messagebox.showerror("Error", str(e))
+                return
+
             result = self.process_file(file_path)
+
             if result is None:  # User cancelled the operation
                 return
             produced_text, dns_most_queried_domains, dns_most_common_servers, speed_config = result
