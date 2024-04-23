@@ -7,10 +7,12 @@ graafimuodossa tarjolla on yhteenveto yleisimmistä nimistä nimipalvelukyselyis
 sekä tiedonsiirron nopeudesta ajan suhteen. Lisäksi etusivulla on dashboard-tyylisesti muutama numeerinen
 indikaattori (pakettien määrä, tallennuksen kesto, jne.).
 
-## Dokunentaatio
+## Dokumentaatio
 [Työaikakirjanpito](dokumentaatio/tuntikirjanpito.md)  
 [Vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)  
 [Changelog](dokumentaatio/changelog.md)
+[Release](https://github.com/villesalmela/ot-harjoitustyo/releases/tag/Viikko5)
+
 
 ## Asennus
 1. Asenna riippuvuudet komennolla:
