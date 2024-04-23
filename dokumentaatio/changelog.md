@@ -71,9 +71,14 @@
         - Yleisimmät asiakkaat DHCP paketeista
     - Käyttäjä voi katsoa graafista
         - Yleisimmät DNS-palvelimet DNS paketeista
+        - Tiedonsiirron nopeus
 - Parannettu pakettien parsintaa
     - Lisätty virheenkäsittelyä
     - Lisätty lokitusta
         - support-loki: tuen vuoksi parsimatta jääneet kerrokset
         - error-loki: yllättävän virheen vuoksi parsimatta jääneet kerrokset
         - checksum-loki: mahdollisesti korruptoituneet paketit
+- Ehostettu käyttöliitymää
+    - Siiretty tiedoston prosessointi omaan säikeeseen, jotta käyttöliittymä ei jumita
+    - Lisätty latausindikaattori
+    - Estetty tulosteen muokkaminen
