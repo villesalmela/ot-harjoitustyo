@@ -2,8 +2,10 @@
 Harjoitustyönä teen sovelluksen, joka **visualisoi** yhteenvedon verkkoliikenteestä, käyttäen syötteenä _PCAP-tiedostoa_.
 
 ## Status
-Ohjelma kykenee parsimaan DNS- ja DHCP-paketteja. Tekstimuodossa voi tarkastella tietoa kaikista paketeista,
-graafimuodossa tarjolla on yhteenveto yleisimmistä nimistä nimipalvelukyselyissä.
+Ohjelma kykenee parsimaan monenlaisia verkkopaketteja. Tekstimuodossa voi tarkastella tietoa kaikista paketeista,
+graafimuodossa tarjolla on yhteenveto yleisimmistä nimistä nimipalvelukyselyissä, yleisimmistä nimipalvelimista,
+sekä tiedonsiirron nopeudesta ajan suhteen. Lisäksi etusivulla on dashboard-tyylisesti muutama numeerinen
+indikaattori (pakettien määrä, tallennuksen kesto, jne.).
 
 ## Dokunentaatio
 [Työaikakirjanpito](dokumentaatio/tuntikirjanpito.md)  
