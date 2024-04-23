@@ -289,4 +289,5 @@ class PcapUi(tk.Tk):
 
 def start_app(analyze_function):
     app = PcapUi(analyze_function)
+    app.eval('tk::PlaceWindow . center')
     app.mainloop()
