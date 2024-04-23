@@ -57,7 +57,7 @@ def configure_dns_most_common_servers(dns_analyzer: DNSAnalyzer) -> FigureConfig
     return dns2_config
 
 
-def analyze_pcap(filename: str) -> tuple[str | FigureConfig, ...]:
+def analyze_pcap(filename: str) -> tuple[str | FigureConfig | dict, ...]:
     out = ""
 
     # Parse the PCAP file
@@ -74,20 +74,25 @@ def analyze_pcap(filename: str) -> tuple[str | FigureConfig, ...]:
 
     # Analyze
     dhcp_most_common_clients = dhcp_analyzer.most_common_clients()
-    dhcp_most_common_clients_str = json.dumps(dhcp_most_common_clients, cls=JSONEncoder, indent=4)
     start_time, end_time, duration = base_analyzer.time_range_and_duration()
 
     # Summary
     out += (
         f"\n### SUMMARY ###\nTotal packets: {len(parsed_packets)}\nMost common DHCP clients: "
-        f"{dhcp_most_common_clients_str}\nTotal data size: {base_analyzer.total_size()}\n"
-        f"Start time: {start_time}\nEnd time: {end_time}\nDuration: {duration}\n")
+        f"{json.dumps(dhcp_most_common_clients, cls=JSONEncoder, indent=4)}")
 
     speed_config = configure_speed_graph(base_analyzer)
     dns1_config = configure_dns_most_queried_domains(dns_analyzer)
     dns2_config = configure_dns_most_common_servers(dns_analyzer)
+    indicators = {
+        "packet_count": len(parsed_packets),
+        "data_amount": base_analyzer.total_size(),
+        "duration": duration.total_seconds(),
+        "start_time": start_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
 
-    return out, dns1_config, dns2_config, speed_config
+    return out, dns1_config, dns2_config, speed_config, indicators
 
 
 if __name__ == '__main__':

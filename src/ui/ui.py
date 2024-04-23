@@ -1,7 +1,7 @@
 from threading import Thread
 from functools import wraps
 import tkinter as tk
-from tkinter import ttk, filedialog, scrolledtext, PhotoImage, messagebox
+from tkinter import ttk, filedialog, scrolledtext, PhotoImage, messagebox, StringVar
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -69,7 +69,7 @@ class PcapUi(tk.Tk):
         self.analyze_function = analyze_function
 
         self.title('PCAP Analyzer')
-        self.geometry('800x600')
+        self.geometry('1200x800')
         icon = PhotoImage(file='assets/icon.png')
         self.iconphoto(True, icon)
 
@@ -77,10 +77,12 @@ class PcapUi(tk.Tk):
         self.figures = {}
         self.canvases = {}
         self.plots = {}
+        self.indicators = {}
 
         self.figure_id = 0
         self.plot_id = 0
         self.text_area_id = 0
+        self.indicator_id = 0
 
         self.create_menu()
         self.initialize_ui()
@@ -128,6 +130,14 @@ class PcapUi(tk.Tk):
         self.notebook.pack(expand=True, fill=tk.BOTH)
 
         # Prepare tab 1
+        indicators_frame = ttk.Frame(self.tab1)
+        self.packet_count_id = self.create_indicator(indicators_frame, 0, "Packet Count", 0, 0)
+        self.data_amount_id = self.create_indicator(indicators_frame, 0, "Data Amount", 0, 1)
+        self.duration_id = self.create_indicator(indicators_frame, 0, "Duration", 0, 2)
+        self.starttime_id = self.create_indicator(indicators_frame, 0, "Start Time", 0, 3)
+        self.endtime_id = self.create_indicator(indicators_frame, 0, "End Time", 0, 4)
+        indicators_frame.pack(expand=True)
+
         self.overview_figure_id = self.create_figure_and_canvas(self.tab1)
         self.speed_plot_id = self.create_plot(self.overview_figure_id, 111)
 
@@ -157,6 +167,35 @@ class PcapUi(tk.Tk):
             padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         return text_area_id
+
+    def create_indicator(self, parent, value, title, row, column):
+        "Generated with ChatGPT."
+
+        # Assigning a unique ID to the indicator
+        indicator_id = self.indicator_id
+        self.indicator_id += 1
+
+        # Create StringVar to hold the value
+        value_holder = StringVar(parent, value)
+
+        # Create a new Frame as a child of the specified parent widget
+        frame = ttk.Frame(parent, borderwidth=2, relief="groove")
+
+        # Create a Label for the number, large and bold
+        number_label = ttk.Label(frame, textvariable=value_holder, font=('Helvetica', 24, 'bold'))
+        number_label.pack(pady=(0, 5))  # Add some padding below the number
+
+        # Create a Label for the title, smaller and less prominent
+        title_label = ttk.Label(frame, text=title, font=('Helvetica', 14))
+        title_label.pack(pady=(5, 0))  # Add some padding above the title
+
+        # Place the frame using the grid layout manager
+        frame.grid(row=row, column=column, padx=10, pady=10, sticky='ew')
+
+        # Store the frame
+        self.indicators[indicator_id] = value_holder
+
+        return indicator_id
 
     def create_figure_and_canvas(self, container):
 
@@ -217,21 +256,25 @@ class PcapUi(tk.Tk):
 
             if result is None:  # User cancelled the operation
                 return
-            produced_text, dns_most_queried_domains, dns_most_common_servers, speed_config = result
-            self.display_text(
-                text_area_id=self.summary_text_area_id, text=produced_text)
-            self.display_bar_graph(
-                self.dns_plot_id_1,
-                dns_most_queried_domains)
-            self.display_bar_graph(self.dns_plot_id_2, dns_most_common_servers)
-            self.display_timeseries_dual(self.speed_plot_id,
-                                         speed_config)
+            produced_text, dns_domains, dns_servers, speed_config, indicators = result
+            self.display_text(text_area_id=self.summary_text_area_id, text=produced_text)
+            self.display_bar_graph(self.dns_plot_id_1, dns_domains)
+            self.display_bar_graph(self.dns_plot_id_2, dns_servers)
+            self.display_timeseries_dual(self.speed_plot_id, speed_config)
+            self.display_indicator(self.packet_count_id, indicators["packet_count"])
+            self.display_indicator(self.data_amount_id, indicators["data_amount"])
+            self.display_indicator(self.duration_id, indicators["duration"])
+            self.display_indicator(self.starttime_id, indicators["start_time"])
+            self.display_indicator(self.endtime_id, indicators["end_time"])
         else:  # no file selected
             pass
 
     @with_loading_screen
     def process_file(self, file_path):
         return self.analyze_function(file_path)
+
+    def display_indicator(self, indicator_id, value):
+        self.indicators[indicator_id].set(value)
 
     def display_text(self, text_area_id, text):
 
@@ -426,6 +469,10 @@ class PcapUi(tk.Tk):
         # Resetting the plots
         for plot, _ in self.plots.values():
             plot.clear()
+
+        # Resetting the indicators
+        for indicator in self.indicators.values():
+            indicator.set(0)
 
         # Refreshing the canvas
         for canvas in self.canvases.values():
