@@ -464,7 +464,9 @@ class PcapUi(tk.Tk):
     def reset(self):
         # Resetting the text areas
         for text_area in self.text_areas.values():
+            text_area.config(state=tk.NORMAL)
             text_area.delete('1.0', tk.END)
+            text_area.config(state=tk.DISABLED)
 
         # Resetting the plots
         for plot, _ in self.plots.values():
