@@ -69,6 +69,10 @@
 - Lisätty toiminnallisuuksia
     - Käyttäjä voi tarkistaa yhteenvedon, joka sisältää
         - Yleisimmät asiakkaat DHCP paketeista
+    - Käyttäjä näkee dashboard-tyylisistä indikaattoreista
+        - Pakettien määrän
+        - Siirretyn datan määrän
+        - Tallennuksen ajankohdan ja keston
     - Käyttäjä voi katsoa graafista
         - Yleisimmät DNS-palvelimet DNS paketeista
         - Tiedonsiirron nopeus

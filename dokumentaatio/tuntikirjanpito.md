@@ -23,4 +23,5 @@
 | 23.4. | 4    | graafi tiedonsiirron nopeudelle, latausindikaattori |
 | 23.4. | 1    | refactorointia, formatointia |
 | 23.4. | 1    | käsittely tiedostovalinnan virheille |
-| summa | 56   | |
+| 23.4. | 1    | lisätty dashboard-tyyliset indikaattorit |
+| summa | 57   | |
