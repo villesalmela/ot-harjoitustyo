@@ -3,34 +3,91 @@ import json
 from packet_parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from analyzer.dhcp_analyzer import DHCPAnalyzer
+from analyzer.base_analyzer import BaseAnalyzer
 from ui import ui
-from utils.utils import JSONEncoder
+from ui.figure_config import FigureConfig
+from utils.utils import JSONEncoder, scale_bits, convert_to_bits
 
 
-def analyze_pcap(filename: str) -> tuple[str, dict[str, int], dict[str, int]]:
+def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:
+    # Get the time series data
+    bytes_per_second, max_bytes_per_second = base_analyzer.time_series(100)
+
+    # Convert bytes to bits
+    bits_per_second = convert_to_bits(bytes_per_second)
+    max_bits_per_second = convert_to_bits(max_bytes_per_second)
+
+    # Adjust the speed unit
+    scaled_speed_max, unit_max = scale_bits(max_bits_per_second)
+    scaled_speed, unit = scale_bits(bits_per_second)
+
+    # Prepare figure configurations
+    speed_config = FigureConfig(
+        "Traffic speed",
+        scaled_speed,
+        "Time",
+        f"Average Speed ({unit} per second)",
+        "tab:blue",
+        scaled_speed_max,
+        f"Max Speed ({unit_max} per second)",
+        "tab:red")
+
+    return speed_config
+
+
+def configure_dns_most_queried_domains(dns_analyzer: DNSAnalyzer) -> FigureConfig:
+    dns_most_queried_domains = dns_analyzer.most_queried_domains()
+    dns1_config = FigureConfig(
+        "Most Queried Domains",
+        dns_most_queried_domains,
+        "Domain",
+        "Count",
+        "tab:blue")
+    return dns1_config
+
+
+def configure_dns_most_common_servers(dns_analyzer: DNSAnalyzer) -> FigureConfig:
+    dns_most_common_servers = dns_analyzer.most_common_servers()
+    dns2_config = FigureConfig(
+        "Most Common Servers",
+        dns_most_common_servers,
+        "Server",
+        "Count",
+        "tab:red")
+    return dns2_config
+
+
+def analyze_pcap(filename: str) -> tuple[str | FigureConfig, ...]:
     out = ""
+
     # Parse the PCAP file
-    parser = PcapParser()
-    parsed_packets = parser.parse_pcap(filename)
+    parsed_packets = PcapParser().parse_pcap(filename)
 
     # Display the parsed packets
     for packet in parsed_packets:
         out += str(packet) + "\n"
 
-    # Summary
-    out += "\n### SUMMARY ###\n"
-    out += f"Total packets: {len(parsed_packets)}\n"
+    # Prepare analyzers
+    base_analyzer = BaseAnalyzer(parsed_packets)
     dns_analyzer = DNSAnalyzer(parsed_packets)
-    dns_most_queried_domains = dns_analyzer.most_queried_domains()
-    dns_most_common_servers = dns_analyzer.most_common_servers()
     dhcp_analyzer = DHCPAnalyzer(parsed_packets)
+
+    # Analyze
     dhcp_most_common_clients = dhcp_analyzer.most_common_clients()
     dhcp_most_common_clients_str = json.dumps(dhcp_most_common_clients, cls=JSONEncoder, indent=4)
-    out += f"Most common DHCP clients: {dhcp_most_common_clients_str}\n"
-    out += f"Count of DNS queries by FQDN: {json.dumps(dns_most_queried_domains, indent=4)}\n"
-    out += f"Most common DNS servers: {json.dumps(dns_most_common_servers, indent=4)}\n"
+    start_time, end_time, duration = base_analyzer.time_range_and_duration()
 
-    return out, dns_most_queried_domains, dns_most_common_servers
+    # Summary
+    out += (
+        f"\n### SUMMARY ###\nTotal packets: {len(parsed_packets)}\nMost common DHCP clients: "
+        f"{dhcp_most_common_clients_str}\nTotal data size: {base_analyzer.total_size()}\n"
+        f"Start time: {start_time}\nEnd time: {end_time}\nDuration: {duration}\n")
+
+    speed_config = configure_speed_graph(base_analyzer)
+    dns1_config = configure_dns_most_queried_domains(dns_analyzer)
+    dns2_config = configure_dns_most_common_servers(dns_analyzer)
+
+    return out, dns1_config, dns2_config, speed_config
 
 
 if __name__ == '__main__':
