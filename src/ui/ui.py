@@ -62,6 +62,7 @@ def with_loading_screen(func):
 
 
 class PcapUi(tk.Tk):
+
     def __init__(self, analyze_function):
         super().__init__()
         self.analyze_function = analyze_function
@@ -115,19 +116,25 @@ class PcapUi(tk.Tk):
         # Create frames for tabs
         self.tab1 = ttk.Frame(self.notebook)
         self.tab2 = ttk.Frame(self.notebook)
+        self.tab3 = ttk.Frame(self.notebook)
 
         # Add tabs to the notebook
-        self.notebook.add(self.tab1, text='Details')
-        self.notebook.add(self.tab2, text='DNS')
+        self.notebook.add(self.tab1, text='Overview')
+        self.notebook.add(self.tab2, text='Details')
+        self.notebook.add(self.tab3, text='DNS')
 
         # Pack to make visible
         self.notebook.pack(expand=True, fill=tk.BOTH)
 
         # Prepare tab 1
-        self.summary_text_area_id = self.create_scrollable_text_area(self.tab1)
+        self.overview_figure_id = self.create_figure_and_canvas(self.tab1)
+        self.speed_plot_id = self.create_plot(self.overview_figure_id, 111)
 
         # Prepare tab 2
-        figure_id = self.create_figure_and_canvas(self.tab2)
+        self.summary_text_area_id = self.create_scrollable_text_area(self.tab2)
+
+        # Prepare tab 3
+        figure_id = self.create_figure_and_canvas(self.tab3)
 
         self.dns_plot_id_1 = self.create_plot(figure_id, 211)
         self.dns_plot_id_2 = self.create_plot(figure_id, 212)
@@ -206,13 +213,11 @@ class PcapUi(tk.Tk):
             self.display_text(
                 text_area_id=self.summary_text_area_id, text=produced_text)
             self.display_bar_graph(
-                plot_id=self.dns_plot_id_1,
-                data=dns_most_queried_domains,
-                title="Most queried domains (grouped by 2LD)",
-                xlabel="Count",
-                ylabel="Domain")
-            self.display_bar_graph(plot_id=self.dns_plot_id_2, data=dns_most_common_servers,
-                                   title="Most used DNS servers", xlabel="Count", ylabel="Server")
+                self.dns_plot_id_1,
+                dns_most_queried_domains)
+            self.display_bar_graph(self.dns_plot_id_2, dns_most_common_servers)
+            self.display_timeseries_dual(self.speed_plot_id,
+                                         speed_config)
         else:  # no file selected
             pass
 
@@ -359,19 +364,23 @@ class PcapUi(tk.Tk):
     def display_bar_graph(
         self,
         plot_id: int,
-        data: dict[str, int],
-        title: str | None = None,
-        xlabel: str | None = None,
-        ylabel: str | None = None
+        config: FigureConfig
     ):
 
         # Fetch the plot and its parent figure
         plot, figure_id = self.plots[plot_id]
 
+        # Unpacking the configuration
+        title = config.title
+        data = config.data1
+        xlabel = config.xlabel
+        ylabel = config.y1label
+        color = config.color1
+
         # Creating the horizontal bar graph
         keys = list(data.keys())
         values = list(data.values())
-        bars = plot.barh(range(len(keys)), values, color='skyblue', alpha=0.7)
+        bars = plot.barh(range(len(keys)), values, color=color, alpha=0.7)
 
         # Adding keys as labels on each bar
         for bar, key in zip(bars, keys):
