@@ -5,24 +5,24 @@ Sovellus analysoi annetun PCAP-tiedoston ja tuottaa yhteenvedon tallennetun verk
 Sovelluksella on vain yhdenlaisia käyttäjiä, joten käyttäjänhallintaa ei toteuteta.
 ## Perusversion tarjoama toiminnallisuus
 - [x] Käyttäjä voi valita analysoitavan tiedoston paikalliselta koneelta käyttäen tiedostonvalitsinta
-    - [ ] Tiedoston on oltava kooltaan enintään 100 MB
-    - [ ] Tiedoston on oltava yhteensopiva libpcap -kirjaston kanssa
-    - [ ] Käyttäjälle ilmoitetaan, mikäli tiedoston luku epäonnistuu tai tiedosto ei kelpaa
-- [ ] Käyttäjä voi tarkastella analyysin tuloksia taulukkomuodossa
+    - [x] Tiedoston on oltava kooltaan enintään 100 MB
+    - [x] Tiedoston on oltava päätteltään ".pcap"
+    - [x] Käyttäjälle ilmoitetaan, mikäli tiedoston luku epäonnistuu tai tiedosto ei kelpaa
+- [ ] Käyttäjä voi tarkastella analyysin tuloksia tekstimuodossa
     - [ ] Perustiedot
-        - [ ] Tallennuksen ajanjakso
+        - [x] Tallennuksen ajanjakso
         - [x] Pakettien kokonaismäärä
-        - [ ] Datan kokonaismäärä
+        - [x] Datan kokonaismäärä
         - [ ] Osoitteiden kokonaismäärä
         - [ ] Liikenteen jakautuminen protokollittain
     - [ ] Protokollakohtaiset tiedot
         - [ ] DHCP
             - [ ] Lista tunnistetuista DHCP-palvelimista
             - [ ] Lista tunnistetuista reitittimistä
-            - [ ] Lista tunnistetuista asiakkaista
-        - [ ] DNS
-            - [ ] Lista tunnistetuista DNS-palvelimista
-            - [x] Lista yleisimmistä verkkotunnuksista
+            - [x] Lista tunnistetuista asiakkaista
+        - [x] DNS
+            - [x] Graafi tunnistetuista DNS-palvelimista
+            - [x] Graafi yleisimmistä verkkotunnuksista
         - [ ] HTTP/S
             - [ ] Lista yleisimmistä HTTP-palvelimista
             - [ ] Liikenteen jakautuminen salattuun ja salaamattomaan
@@ -33,7 +33,7 @@ Sovelluksella on vain yhdenlaisia käyttäjiä, joten käyttäjänhallintaa ei t
 - [ ] Käyttäjä voi rajata analyysin koskemaan tiettyjä osoitteita
 - [ ] Käyttäjä voi täydentää analyysiä valitsemalla seuraavan tiedoston
 - [ ] Käyttäjä voi tarkastella analyysin tuloksia erilaisten visualisointien avulla
-    - [ ] Viivadiagrammi: Datan määrä ajan suhteen
+    - [x] Aluediagrammi: Tiedonsiirron nopeus ajan suhteen
     - [ ] Ympyrädiagrammi: Liikenteen jakautuminen protokollittain
     - [ ] Verkkokaavio: Sisäverkon laitteiden väliset yhteydet
 - [ ] Käyttäjä voi tarkastella tietoturvapoikkeamia

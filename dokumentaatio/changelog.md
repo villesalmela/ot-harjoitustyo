@@ -82,3 +82,4 @@
     - Siiretty tiedoston prosessointi omaan säikeeseen, jotta käyttöliittymä ei jumita
     - Lisätty latausindikaattori
     - Estetty tulosteen muokkaminen
+    - Tiedostovalinnan virheet esitetään viestillä käyttäjälle

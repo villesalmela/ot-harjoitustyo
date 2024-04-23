@@ -22,4 +22,5 @@
 | 21.4. | 1    | dokumentaatiota |
 | 23.4. | 4    | graafi tiedonsiirron nopeudelle, latausindikaattori |
 | 23.4. | 1    | refactorointia, formatointia |
-| summa | 55   | |
+| 23.4. | 1    | käsittely tiedostovalinnan virheille |
+| summa | 56   | |
