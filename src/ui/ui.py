@@ -222,11 +222,17 @@ class PcapUi(tk.Tk):
         # Fetch the text area
         text_area = self.text_areas[text_area_id]
 
+        # Make it read-write
+        text_area.config(state=tk.NORMAL)
+
         # Resetting
         text_area.delete('1.0', tk.END)
 
         # Displaying
         text_area.insert(tk.END, text)
+
+        # Make it read-only
+        text_area.config(state=tk.DISABLED)
 
     def display_bar_graph(
         self,
