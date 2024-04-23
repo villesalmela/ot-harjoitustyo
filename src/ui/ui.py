@@ -1,9 +1,61 @@
+from threading import Thread
+from functools import wraps
 import tkinter as tk
 from tkinter import ttk, filedialog, scrolledtext, PhotoImage
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import MaxNLocator
+
+
+
+def with_loading_screen(func):
+    "Generated with ChatGPT."
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        # Function to run in a separate thread
+        def run():
+            result[0] = func(*args, **kwargs)
+            overlay.destroy()
+
+        # Function to stop the thread
+        def stop_thread():
+            if thread.is_alive():
+                # Attempt to join the thread, timing out almost immediately
+                thread.join(timeout=0.1)
+            overlay.destroy()
+
+        root = args[0]  # Assuming the first argument is always the Tkinter root
+
+        # Create an overlay frame
+        overlay = ttk.Frame(root)
+        overlay.place(x=1, y=1, relwidth=1, relheight=1)
+
+        # Inner frame to hold widgets
+        inner_frame = ttk.Frame(overlay)
+        inner_frame.pack(expand=True)
+
+        # Add text
+        loading_label = ttk.Label(inner_frame, text="Please wait...")
+        loading_label.pack()
+
+        # Button to cancel the operation
+        cancel_button = ttk.Button(inner_frame, text="Cancel", command=stop_thread)
+        cancel_button.pack()
+
+        # This will store the function's result
+        result = [None]
+
+        # Start the thread
+        thread = Thread(target=run, daemon=True)
+        thread.start()
+        overlay.wait_window()
+
+        return result[0]
+
+    return wrapper
 
 
 class PcapUi(tk.Tk):
@@ -144,8 +196,10 @@ class PcapUi(tk.Tk):
         file_path = filedialog.askopenfilename()
 
         if file_path:  # file selected
-            produced_text, dns_most_queried_domains, dns_most_common_servers = self.process_file(
-                file_path)
+            result = self.process_file(file_path)
+            if result is None:  # User cancelled the operation
+                return
+            produced_text, dns_most_queried_domains, dns_most_common_servers, speed_config = result
             self.display_text(
                 text_area_id=self.summary_text_area_id, text=produced_text)
             self.display_bar_graph(
@@ -159,6 +213,7 @@ class PcapUi(tk.Tk):
         else:  # no file selected
             pass
 
+    @with_loading_screen
     def process_file(self, file_path):
         return self.analyze_function(file_path)
 
