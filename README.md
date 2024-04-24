@@ -11,7 +11,8 @@ indikaattori (pakettien määrä, tallennuksen kesto, jne.).
 [Työaikakirjanpito](dokumentaatio/tuntikirjanpito.md)  
 [Vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)  
 [Changelog](dokumentaatio/changelog.md)  
-[Release](https://github.com/villesalmela/ot-harjoitustyo/releases/tag/Viikko5)
+[Release](https://github.com/villesalmela/ot-harjoitustyo/releases/tag/Viikko5)  
+[Arkkitehtuuri](dokumentaatio/arkkitehtuuri.md)
 
 
 ## Asennus
