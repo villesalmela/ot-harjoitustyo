@@ -1,10 +1,11 @@
 # SHARED PROPERTIES
-direction: down
+direction: right
 classes: {
   package: {
-    shape: package
-    label.near: outside-top-left
-    style.font-size: 28
+    shape: rectangle
+    label.near: top-left
+    style.font-size: 32
+    style.bold: true
   }
   dependency: {
     style.stroke-dash: 3
@@ -45,6 +46,10 @@ classes: {
 }
 
 # Objects
+# larger font
+main: {
+  style.font-size: 32
+}
 ui: {
   class: package
   PcapUi: {
@@ -96,11 +101,11 @@ components: {
     class: composition
   }
 }
-\"layers": {
+\layers': {
   LayerLevel -> LayerConfig: {
     class: composition
   }
-  Properties -> LayerConfig: {
+  properties -> LayerConfig: {
     class: aggregation
   }
   class: package
@@ -134,8 +139,8 @@ components: {
   \.\.\. -> LayerConfig: {
     class: implementation
   }
-  
-  Properties: {
+
+  properties: {
     class: package
     HardwareType: {
       class: enum
@@ -152,6 +157,16 @@ components: {
   }
 }
 
+main -> ui: {
+  class: dependency
+}
+main -> packet_parser: {
+  class: dependency
+}
+main -> analyzer: {
+  class: dependency
+}
+
 # Inter-container links
 packet_parser -> components: {
   class: dependency
@@ -159,10 +174,9 @@ packet_parser -> components: {
 analyzer -> components: {
   class: dependency
 }
-\"layers".LayerConfig -> components.Layer: {
+\layers'.LayerConfig -> components.Layer: {
   class: composition
 }
-packet_parser -- ui -- analyzer
 
 # Explaining colors
 Legend: {
