@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Self
 from uuid import uuid4
-from utils.utils import flatten_dict
 
-from components.layer import Layer
+from utils.utils import flatten_dict
 
 
 class Packet:

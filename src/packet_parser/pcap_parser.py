@@ -107,8 +107,8 @@ class PcapParser:
                     parsed_packet.layers[layer_level] = layer
                 except ParsingError as e:
                     parsed_packet.layers[layer_level] = Layer(
-                            myRaw(layer_level), len(packet), len(
-                                packet.payload))
+                        myRaw(layer_level), len(packet), len(
+                            packet.payload))
                     if isinstance(e.__cause__, UnsupportedLayerError):
                         # e.verbose = False
                         self.support_log += f"{e}\n"

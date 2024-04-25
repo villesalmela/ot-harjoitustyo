@@ -16,9 +16,9 @@ class BaseAnalyzer:
         self.df = pd.DataFrame([packet.flatten() for packet in packets]).set_index("packet.uid")
 
         # for debugging
-        #pd.set_option('display.max_columns', None)
-        #pd.set_option('display.width', 300)
-        #print(self.df)
+        # pd.set_option('display.max_columns', None)
+        # pd.set_option('display.width', 300)
+        # print(self.df)
 
     def get_df(self) -> pd.DataFrame:
         return self.df.copy()

@@ -1,6 +1,5 @@
 from typing import Self
 import json
-from enum import Enum
 
 from layers.layer_config import LayerConfig
 from utils.utils import preprocess_data, JSONEncoder
