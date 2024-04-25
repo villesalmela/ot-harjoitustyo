@@ -20,7 +20,7 @@ class DNSAnalyzer:
     def enrich(self) -> None:
         # parse 2LD from qname
         self.packets[f"{LayerLevel.APPLICATION}.data.2LD"] = self.packets[
-            "APPLICATION.data.qname"].apply(extract_2ld)
+            f"{LayerLevel.APPLICATION}.data.qname"].apply(extract_2ld)
 
     def most_queried_domains(self, n=10) -> dict[str, int]:
         if self.packets.empty:
