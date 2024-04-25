@@ -139,7 +139,7 @@ class PcapUi(tk.Tk):
         indicators_frame.pack(expand=True)
 
         self.overview_figure_id = self.create_figure_and_canvas(self.tab1)
-        self.speed_plot_id = self.create_plot(self.overview_figure_id, 111)
+        self.speed_plot_id = self.create_plot(self.overview_figure_id, 111, dual=True)
 
         # Prepare tab 2
         self.summary_text_area_id = self.create_scrollable_text_area(self.tab2)
@@ -222,7 +222,7 @@ class PcapUi(tk.Tk):
         # Return the ID
         return figure_id
 
-    def create_plot(self, figure_id, position: int):
+    def create_plot(self, figure_id, position: int, dual=False):
 
         # Assigning a unique ID to the plot
         plot_id = self.plot_id
@@ -235,7 +235,11 @@ class PcapUi(tk.Tk):
         plot = figure.add_subplot(position)
 
         # Store the plot and its parent figure
-        self.plots[plot_id] = plot, figure_id
+        if dual:
+            plot2 = plot.twinx()
+            self.plots[plot_id] = (plot, plot2), figure_id
+        else:
+            self.plots[plot_id] = plot, figure_id
 
         # Return the ID
         return plot_id
@@ -296,7 +300,7 @@ class PcapUi(tk.Tk):
     def display_timeseries_dual(self, plot_id, speed_config: FigureConfig):
 
         # Fetch the plot and its parent figure
-        plot, figure_id = self.plots[plot_id]
+        (plot, plot2), figure_id = self.plots[plot_id]
 
         # Unpacking the configuration
         title = speed_config.title
@@ -364,7 +368,6 @@ class PcapUi(tk.Tk):
         plot.yaxis.grid(False)
 
         # Setup second plot
-        plot2 = plot.twinx()
         plot2_color = color2
         plot2.set_ylabel(y2label, color=plot2_color)
         plot2.plot(
@@ -470,7 +473,11 @@ class PcapUi(tk.Tk):
 
         # Resetting the plots
         for plot, _ in self.plots.values():
-            plot.clear()
+            if isinstance(plot, tuple):
+                for p in plot:
+                    p.clear()
+            else:
+                plot.clear()
 
         # Resetting the indicators
         for indicator in self.indicators.values():
