@@ -1,6 +1,7 @@
 import unittest
 
 from packet_parser.pcap_parser import PcapParser
+from analyzer.base_analyzer import BaseAnalyzer
 from analyzer.dns_analyzer import DNSAnalyzer
 from utils.utils import extract_2ld
 from layers.layer_level import LayerLevel
@@ -14,7 +15,8 @@ class TestDNS(unittest.TestCase):
     def setUp(self) -> None:
         parser = PcapParser()
         self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
-        self.analyzer = DNSAnalyzer(self.parsed_packets)
+        base_analyzer = BaseAnalyzer(self.parsed_packets)
+        self.analyzer = DNSAnalyzer(base_analyzer.get_df())
 
     def test_count_dns_domains(self) -> None:
         domain_counts = self.analyzer.most_queried_domains()

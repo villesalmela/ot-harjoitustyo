@@ -1,8 +1,8 @@
-from enum import IntEnum
+from enum import StrEnum
 
 
-class LayerLevel(IntEnum):
-    LINK = 1
-    NETWORK = 2
-    TRANSPORT = 3
-    APPLICATION = 4
+class LayerLevel(StrEnum):
+    LINK = "LINK"
+    NETWORK = "NETWORK"
+    TRANSPORT = "TRANSPORT"
+    APPLICATION = "APPLICATION"

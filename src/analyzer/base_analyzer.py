@@ -13,15 +13,19 @@ class BaseAnalyzer:
             return
 
         # create dataframes
-        self.df = pd.DataFrame([{"time": packet.time, "size": packet.size}
-                               for packet in self.packets])
+        self.df = pd.DataFrame([packet.flatten() for packet in packets]).set_index("packet.uid")
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.width', 300)
+        # for debugging
+        #pd.set_option('display.max_columns', None)
+        #pd.set_option('display.width', 300)
+        #print(self.df)
+
+    def get_df(self) -> pd.DataFrame:
+        return self.df.copy()
 
     def time_series(self, interval_count_target: int) -> tuple[pd.Series, pd.Series]:
         time_df = self.df.copy()
-        time_df.set_index("time", inplace=True)
+        time_df.set_index("packet.time", inplace=True)
         _, _, duration = self.time_range_and_duration()
         duration_seconds = int(duration.total_seconds())
 
@@ -37,17 +41,17 @@ class BaseAnalyzer:
         # Custom rounding
         sampling_freq = custom_round(sampling_freq)
 
-        bytes_per_second = time_df["size"].resample("s").sum().fillna(0)
+        bytes_per_second = time_df["packet.size"].resample("s").sum().fillna(0)
         max_bytes_per_second = bytes_per_second.resample(f"{sampling_freq}s").max().fillna(0)
-        bytes_per_interval = time_df["size"].resample(f"{sampling_freq}s").sum().fillna(0)
+        bytes_per_interval = time_df["packet.size"].resample(f"{sampling_freq}s").sum().fillna(0)
         bytes_per_second = bytes_per_interval / sampling_freq
         return bytes_per_second, max_bytes_per_second
 
     def total_size(self) -> float:
-        return self.df["size"].sum()
+        return self.df["packet.size"].sum()
 
     def time_range_and_duration(self) -> tuple[pd.Timestamp, pd.Timestamp, pd.Timedelta]:
-        time_earliest = self.df["time"].min()
-        time_latest = self.df["time"].max()
+        time_earliest = self.df["packet.time"].min()
+        time_latest = self.df["packet.time"].max()
         duration = time_latest - time_earliest
         return time_earliest, time_latest, duration

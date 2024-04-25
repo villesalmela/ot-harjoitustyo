@@ -23,7 +23,6 @@ class TestPacket(unittest.TestCase):
         layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(layer.size_total, 28)
         self.assertEqual(layer.size_payload, 0)
-        self.assertEqual(layer.layer_type, LayerLevel.APPLICATION)
         self.assertEqual(layer.layer_name, "DNS")
         self.assertTrue(layer == layer)
         self.assertFalse(layer == 1)

@@ -70,6 +70,12 @@ analyzer: {
   DHCPAnalyzer: {
     class: class
   }
+  DNSAnalyzer -> BaseAnalyzer: {
+    class: dependency
+  }
+  DHCPAnalyzer -> BaseAnalyzer: {
+    class: dependency
+  }
 }
 packet_parser: {
   class: package

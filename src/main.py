@@ -69,8 +69,8 @@ def analyze_pcap(filename: str) -> tuple[str | FigureConfig | dict, ...]:
 
     # Prepare analyzers
     base_analyzer = BaseAnalyzer(parsed_packets)
-    dns_analyzer = DNSAnalyzer(parsed_packets)
-    dhcp_analyzer = DHCPAnalyzer(parsed_packets)
+    dns_analyzer = DNSAnalyzer(base_analyzer.get_df())
+    dhcp_analyzer = DHCPAnalyzer(base_analyzer.get_df())
 
     # Analyze
     dhcp_most_common_clients = dhcp_analyzer.most_common_clients()

@@ -104,12 +104,11 @@ class PcapParser:
                     (LayerLevel.APPLICATION, self.parse_application)]:
                 try:
                     layer = layer_parser(packet_number, packet)
-                    parsed_packet.add_layer(layer)
+                    parsed_packet.layers[layer_level] = layer
                 except ParsingError as e:
-                    parsed_packet.add_layer(
-                        Layer(
+                    parsed_packet.layers[layer_level] = Layer(
                             myRaw(layer_level), len(packet), len(
-                                packet.payload)))
+                                packet.payload))
                     if isinstance(e.__cause__, UnsupportedLayerError):
                         # e.verbose = False
                         self.support_log += f"{e}\n"
