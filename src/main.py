@@ -1,4 +1,4 @@
-import json
+import pandas as pd
 
 from packet_parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
@@ -6,7 +6,31 @@ from analyzer.dhcp_analyzer import DHCPAnalyzer
 from analyzer.base_analyzer import BaseAnalyzer
 from ui import ui
 from ui.figure_config import FigureConfig
-from utils.utils import JSONEncoder, scale_bits, convert_to_bits
+from utils.utils import scale_bits, convert_to_bits
+from components.packet import Packet as myPacket
+
+
+
+class Context:
+    def __init__(self) -> None:
+        self.details = ""
+        self.df = pd.DataFrame()
+
+    def get_df(self):
+        return self.df.copy()
+
+    def reset(self):
+        self.details = ""
+        self.df = pd.DataFrame()
+
+    def append(self, packets: list[myPacket]):
+        df = pd.DataFrame([packet.flatten() for packet in packets]).set_index("packet.uid")
+        self.df = pd.concat([self.df, df])
+
+        # for debugging
+        # pd.set_option('display.max_columns', None)
+        # pd.set_option('display.width', 300)
+        # print(self.df)
 
 
 def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:
@@ -57,43 +81,40 @@ def configure_dns_most_common_servers(dns_analyzer: DNSAnalyzer) -> FigureConfig
     return dns2_config
 
 
-def analyze_pcap(filename: str) -> tuple[str | FigureConfig | dict, ...]:
-    out = ""
+def analyze_pcap(ctx: Context, filename: str) -> tuple[str | FigureConfig | dict, ...]:
 
     # Parse the PCAP file
     parsed_packets = PcapParser().parse_pcap(filename)
 
     # Display the parsed packets
     for packet in parsed_packets:
-        out += str(packet) + "\n"
+        ctx.details += str(packet) + "\n"
+
+    ctx.append(parsed_packets)
 
     # Prepare analyzers
-    base_analyzer = BaseAnalyzer(parsed_packets)
-    dns_analyzer = DNSAnalyzer(base_analyzer.get_df())
-    dhcp_analyzer = DHCPAnalyzer(base_analyzer.get_df())
+    base_analyzer = BaseAnalyzer(ctx.get_df())
+    dns_analyzer = DNSAnalyzer(ctx.get_df())
+    dhcp_analyzer = DHCPAnalyzer(ctx.get_df())
 
     # Analyze
     dhcp_most_common_clients = dhcp_analyzer.most_common_clients()
     start_time, end_time, duration = base_analyzer.time_range_and_duration()
 
-    # Summary
-    out += (
-        f"\n### SUMMARY ###\nTotal packets: {len(parsed_packets)}\nMost common DHCP clients: "
-        f"{json.dumps(dhcp_most_common_clients, cls=JSONEncoder, indent=4)}")
-
     speed_config = configure_speed_graph(base_analyzer)
     dns1_config = configure_dns_most_queried_domains(dns_analyzer)
     dns2_config = configure_dns_most_common_servers(dns_analyzer)
     indicators = {
-        "packet_count": len(parsed_packets),
+        "packet_count": len(ctx.df),
         "data_amount": base_analyzer.total_size(),
         "duration": duration.total_seconds(),
         "start_time": start_time.strftime("%Y-%m-%d %H:%M:%S"),
         "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    return out, dns1_config, dns2_config, speed_config, indicators
+    return ctx.details, dns1_config, dns2_config, speed_config, indicators
 
 
 if __name__ == '__main__':
-    ui.start_app(analyze_pcap)
+    context = Context()
+    ui.start_app(context, analyze_pcap)

@@ -1,30 +1,15 @@
 import pandas as pd
 
-from components.packet import Packet as myPacket
 from utils.utils import custom_round
 
 
 class BaseAnalyzer:
 
-    def __init__(self, packets: list[myPacket]) -> None:
-
+    def __init__(self, packets: pd.DataFrame) -> None:
         self.packets = packets
-        if not self.packets:
-            return
-
-        # create dataframes
-        self.df = pd.DataFrame([packet.flatten() for packet in packets]).set_index("packet.uid")
-
-        # for debugging
-        # pd.set_option('display.max_columns', None)
-        # pd.set_option('display.width', 300)
-        # print(self.df)
-
-    def get_df(self) -> pd.DataFrame:
-        return self.df.copy()
 
     def time_series(self, interval_count_target: int) -> tuple[pd.Series, pd.Series]:
-        time_df = self.df.copy()
+        time_df = self.packets.copy()
         time_df.set_index("packet.time", inplace=True)
         _, _, duration = self.time_range_and_duration()
         duration_seconds = int(duration.total_seconds())
@@ -48,10 +33,10 @@ class BaseAnalyzer:
         return bytes_per_second, max_bytes_per_second
 
     def total_size(self) -> float:
-        return self.df["packet.size"].sum()
+        return self.packets["packet.size"].sum()
 
     def time_range_and_duration(self) -> tuple[pd.Timestamp, pd.Timestamp, pd.Timedelta]:
-        time_earliest = self.df["packet.time"].min()
-        time_latest = self.df["packet.time"].max()
+        time_earliest = self.packets["packet.time"].min()
+        time_latest = self.packets["packet.time"].max()
         duration = time_latest - time_earliest
         return time_earliest, time_latest, duration

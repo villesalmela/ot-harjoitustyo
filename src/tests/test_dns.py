@@ -9,14 +9,16 @@ from layers.properties.dns_dir import DNSDir
 from layers.properties.dns_opcode import DNSOpCode
 from layers.properties.dns_qtype import DNSQType
 from layers.properties.dns_rcode import DNSRCode
+from main import Context
 
 
 class TestDNS(unittest.TestCase):
     def setUp(self) -> None:
         parser = PcapParser()
         self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
-        base_analyzer = BaseAnalyzer(self.parsed_packets)
-        self.analyzer = DNSAnalyzer(base_analyzer.get_df())
+        context = Context()
+        context.append(self.parsed_packets)
+        self.analyzer = DNSAnalyzer(context.get_df())
 
     def test_count_dns_domains(self) -> None:
         domain_counts = self.analyzer.most_queried_domains()

@@ -64,8 +64,9 @@ def with_loading_screen(func):
 
 class PcapUi(tk.Tk):
 
-    def __init__(self, analyze_function):
+    def __init__(self, context, analyze_function):
         super().__init__()
+        self.context = context
         self.analyze_function = analyze_function
 
         self.title('PCAP Analyzer')
@@ -256,6 +257,7 @@ class PcapUi(tk.Tk):
                 messagebox.showerror("Error", str(e))
                 return
 
+            self.reset(keep_context=True)
             result = self.process_file(file_path)
 
             if result is None:  # User cancelled the operation
@@ -275,7 +277,7 @@ class PcapUi(tk.Tk):
 
     @with_loading_screen
     def process_file(self, file_path):
-        return self.analyze_function(file_path)
+        return self.analyze_function(self.context, file_path)
 
     def display_indicator(self, indicator_id, value):
         self.indicators[indicator_id].set(value)
@@ -377,6 +379,7 @@ class PcapUi(tk.Tk):
             linestyle='none',
             marker='o',
             markersize=1.5)
+        plot2.yaxis.set_label_position("right")
 
         # Syncronize the two axes
         freq = data1.index.freq
@@ -464,7 +467,11 @@ class PcapUi(tk.Tk):
     def close(self):
         self.destroy()
 
-    def reset(self):
+    def reset(self, keep_context=False):
+
+        if not keep_context:
+            self.context.reset()
+
         # Resetting the text areas
         for text_area in self.text_areas.values():
             text_area.config(state=tk.NORMAL)
@@ -488,7 +495,7 @@ class PcapUi(tk.Tk):
             canvas.draw()
 
 
-def start_app(analyze_function):
-    app = PcapUi(analyze_function)
+def start_app(context, analyze_function):
+    app = PcapUi(context, analyze_function)
     app.eval('tk::PlaceWindow . center')
     app.mainloop()
