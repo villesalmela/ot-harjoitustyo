@@ -48,7 +48,10 @@ classes: {
 # Objects
 # larger font
 main: {
-  style.font-size: 32
+  class: package
+  Context: {
+    class: class
+  }
 }
 ui: {
   class: package
@@ -69,12 +72,6 @@ analyzer: {
   }
   DHCPAnalyzer: {
     class: class
-  }
-  DNSAnalyzer -> BaseAnalyzer: {
-    class: dependency
-  }
-  DHCPAnalyzer -> BaseAnalyzer: {
-    class: dependency
   }
 }
 packet_parser: {
@@ -192,7 +189,7 @@ Legend: {
   Enum: {
     class: enum
   }
-  \"Class": {
+  Class': {
     class: class
   }
   style.fill: "#FFFAF0"
