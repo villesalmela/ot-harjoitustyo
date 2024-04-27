@@ -27,8 +27,8 @@ Sovelluksella on vain yhdenlaisia käyttäjiä, joten käyttäjänhallintaa ei t
             - [ ] Lista yleisimmistä HTTP-palvelimista
             - [ ] Liikenteen jakautuminen salattuun ja salaamattomaan
 - [x] Käyttäjä voi tyhjentää analyysin ja aloittaa alusta
-- [ ] Käyttäjä voi tallentaa analyysin
-- [ ] Käyttäjä voi avata aiemmin tallennettun analyysin
+- [x] Käyttäjä voi tallentaa analyysin
+- [x] Käyttäjä voi avata aiemmin tallennettun analyysin
 ## Jatkokehitysideoita
 - [ ] Käyttäjä voi rajata analyysin koskemaan tiettyjä osoitteita
 - [ ] Käyttäjä voi täydentää analyysiä valitsemalla seuraavan tiedoston

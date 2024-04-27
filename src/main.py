@@ -1,3 +1,5 @@
+import sqlite3
+
 import pandas as pd
 
 from packet_parser.pcap_parser import PcapParser
@@ -7,8 +9,15 @@ from analyzer.base_analyzer import BaseAnalyzer
 from ui import ui
 from ui.figure_config import FigureConfig
 from utils.utils import scale_bits, convert_to_bits
-from components.packet import Packet as myPacket
+import database
 
+
+pd.set_option('future.no_silent_downcasting', True)
+
+# for debugging
+# pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
+# pd.set_option('display.width', 300)
 
 
 class Context:
@@ -23,14 +32,36 @@ class Context:
         self.details = ""
         self.df = pd.DataFrame()
 
-    def append(self, packets: list[myPacket]):
-        df = pd.DataFrame([packet.flatten() for packet in packets]).set_index("packet.uid")
-        self.df = pd.concat([self.df, df])
+    def save(self, table_name: str = "packets"):
+        conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
+        dtype = database.build_dtypes()
+        self.df.to_sql(table_name, conn, if_exists="replace", dtype=dtype)
+        conn.execute('CREATE TABLE IF NOT EXISTS "details" ("packets_table" TEXT, "data" TEXT)')
+        conn.execute('INSERT INTO "details" ("packets_table", "data") VALUES (?, ?)',
+                     (table_name, self.details))
+        conn.commit()
+        conn.close()
 
-        # for debugging
-        # pd.set_option('display.max_columns', None)
-        # pd.set_option('display.width', 300)
-        # print(self.df)
+    def load(self, table_name: str = "packets"):
+        conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
+        self.df = pd.read_sql(f"SELECT * FROM {table_name}", conn, index_col="packet.uid")
+        self.df = database.adjust_dtypes(self.df)
+        self.details = conn.execute(
+            "SELECT data FROM details WHERE packets_table = ?", (table_name,)).fetchone()[0]
+        conn.close()
+
+    def append(self, filename: str):
+        # Parse the PCAP file
+        parsed_packets = PcapParser().parse_pcap(filename)
+
+        # Get packet details
+        for packet in parsed_packets:
+            self.details += str(packet) + "\n"
+
+        flat_packets = [packet.flatten() for packet in parsed_packets]
+        df = pd.DataFrame(flat_packets).set_index("packet.uid")
+        self.df = pd.concat([self.df, df])
+        self.df = database.adjust_dtypes(self.df)
 
 
 def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:

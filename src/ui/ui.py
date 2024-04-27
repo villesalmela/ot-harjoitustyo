@@ -114,6 +114,12 @@ class PcapUi(tk.Tk):
         self.reset_button = ttk.Button(self.frame, text="Reset", command=self.reset)
         self.reset_button.pack(side='right')
 
+        self.load_button = ttk.Button(self.frame, text="Load", command=self.load)
+        self.load_button.pack(side='right')
+
+        self.save_button = ttk.Button(self.frame, text="Save", command=self.save)
+        self.save_button.pack(side='right')
+
         # Create the notebook for tabs
         self.notebook = ttk.Notebook(self)
 
@@ -265,27 +271,38 @@ class PcapUi(tk.Tk):
                 messagebox.showerror("Error", str(e))
                 return
 
-            self.reset(keep_context=True)
-            result = self.process_file(file_path)
+            self.context.append(file_path)
+            self.update()
 
-            if result is None:  # User cancelled the operation
-                return
-            produced_text, dns_domains, dns_servers, speed_config, indicators = result
-            self.display_text(text_area_id=self.summary_text_area_id, text=produced_text)
-            self.display_bar_graph(self.dns_plot_id_1, dns_domains)
-            self.display_bar_graph(self.dns_plot_id_2, dns_servers)
-            self.display_timeseries_dual(self.speed_plot_id, speed_config)
-            self.display_indicator(self.packet_count_id, indicators["packet_count"])
-            self.display_indicator(self.data_amount_id, indicators["data_amount"])
-            self.display_indicator(self.duration_id, indicators["duration"])
-            self.display_indicator(self.starttime_id, indicators["start_time"])
-            self.display_indicator(self.endtime_id, indicators["end_time"])
         else:  # no file selected
             pass
 
     @with_loading_screen
-    def process_file(self, file_path):
-        return self.analyze_function(self.context, file_path)
+    def update(self):
+
+        result = self.analyze_function(self.context)
+        self.reset(keep_context=True)
+        produced_text, dns_domains, dns_servers, speed_config, indicators, dhcp_clients, dhcp_servers, dhcp_domains = result
+        self.display_text(text_area_id=self.summary_text_area_id, text=produced_text)
+        self.display_bar_graph(self.dns_plot_id_1, dns_domains)
+        self.display_bar_graph(self.dns_plot_id_2, dns_servers)
+        self.display_bar_graph(self.dhcp_plot_id_1, dhcp_clients)
+        self.display_bar_graph(self.dhcp_plot_id_2, dhcp_servers)
+        self.display_bar_graph(self.dhcp_plot_id_3, dhcp_domains)
+
+        self.display_timeseries_dual(self.speed_plot_id, speed_config)
+        self.display_indicator(self.packet_count_id, indicators["packet_count"])
+        self.display_indicator(self.data_amount_id, indicators["data_amount"])
+        self.display_indicator(self.duration_id, indicators["duration"])
+        self.display_indicator(self.starttime_id, indicators["start_time"])
+        self.display_indicator(self.endtime_id, indicators["end_time"])
+
+    def load(self, table_name: str = "packets"):
+        self.context.load(table_name)
+        self.update()
+
+    def save(self, table_name: str = "packets"):
+        self.context.save(table_name)
 
     def display_indicator(self, indicator_id, value):
         self.indicators[indicator_id].set(value)
