@@ -365,22 +365,16 @@ class PcapUi(tk.Tk):
         duration = data1.index[-1] - data1.index[0]
 
         if duration <= pd.Timedelta(minutes=1):
-            print("Setting minor ticks for seconds")
             minor_locator = mdates.SecondLocator()
         elif duration <= pd.Timedelta(hours=1):
-            print("Setting minor ticks for minutes")
             minor_locator = mdates.MinuteLocator()
         elif duration <= pd.Timedelta(days=1):
-            print("Setting minor ticks for hours")
             minor_locator = mdates.HourLocator()
         elif duration <= pd.Timedelta(days=30):
-            print("Setting minor ticks for days")
             minor_locator = mdates.DayLocator()
         elif duration <= pd.Timedelta(days=365):
-            print("Setting minor ticks for months")
             minor_locator = mdates.MonthLocator()
         else:
-            print("Setting minor ticks for quarters")
             minor_locator = mdates.MonthLocator(interval=3)
 
         plot.xaxis.set_minor_locator(minor_locator)

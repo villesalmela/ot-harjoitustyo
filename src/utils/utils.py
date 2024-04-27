@@ -71,8 +71,8 @@ def extract_2ld(fqdn):
     :return: 2LD and TLD combined
     """
 
-    if not fqdn:
-        return ""
+    if pd.isna(fqdn):
+        return pd.NA
 
     # First try with tldextract
     extracted = tldextract.extract(fqdn)

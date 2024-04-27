@@ -1,14 +1,10 @@
 import unittest
 
 from packet_parser.pcap_parser import PcapParser
-from analyzer.base_analyzer import BaseAnalyzer
 from analyzer.dns_analyzer import DNSAnalyzer
 from utils.utils import extract_2ld
 from layers.layer_level import LayerLevel
-from layers.properties.dns_dir import DNSDir
-from layers.properties.dns_opcode import DNSOpCode
-from layers.properties.dns_qtype import DNSQType
-from layers.properties.dns_rcode import DNSRCode
+from layers.dns import DNSDir, DNSOpCode, DNSQType, DNSRCode
 from main import Context
 
 
@@ -17,7 +13,7 @@ class TestDNS(unittest.TestCase):
         parser = PcapParser()
         self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
         context = Context()
-        context.append(self.parsed_packets)
+        context.append("assets/dns.pcap")
         self.analyzer = DNSAnalyzer(context.get_df())
 
     def test_count_dns_domains(self) -> None:
