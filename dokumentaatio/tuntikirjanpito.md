@@ -24,4 +24,10 @@
 | 23.4. | 1    | refactorointia, formatointia |
 | 23.4. | 1    | käsittely tiedostovalinnan virheille |
 | 23.4. | 1    | lisätty dashboard-tyyliset indikaattorit |
-| summa | 57   | |
+| 23.4. | 1    | dokumentaatiota |
+| 24.4. | 1    | dokumentaatiota |
+| 25.4. | 3    | refactorointia, formatointia, korjauksia |
+| 25.4. | 3    | lisätty konteksti sovelluksen tilan ylläpitoa varten |
+| 27.4. | 2    | lisätty DHCP tilastoja |
+| 27.4. | 8    | lisätty tallennus/lataus, tähän liittyvää refactorointia |
+| summa | 75   | |
