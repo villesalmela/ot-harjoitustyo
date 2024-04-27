@@ -121,11 +121,13 @@ class PcapUi(tk.Tk):
         self.tab1 = ttk.Frame(self.notebook)
         self.tab2 = ttk.Frame(self.notebook)
         self.tab3 = ttk.Frame(self.notebook)
+        self.tab4 = ttk.Frame(self.notebook)
 
         # Add tabs to the notebook
         self.notebook.add(self.tab1, text='Overview')
         self.notebook.add(self.tab2, text='Details')
         self.notebook.add(self.tab3, text='DNS')
+        self.notebook.add(self.tab4, text='DHCP')
 
         # Pack to make visible
         self.notebook.pack(expand=True, fill=tk.BOTH)
@@ -150,6 +152,12 @@ class PcapUi(tk.Tk):
 
         self.dns_plot_id_1 = self.create_plot(figure_id, 211)
         self.dns_plot_id_2 = self.create_plot(figure_id, 212)
+
+        # Prepare tab 4
+        figure_id = self.create_figure_and_canvas(self.tab4)
+        self.dhcp_plot_id_1 = self.create_plot(figure_id, 311)
+        self.dhcp_plot_id_2 = self.create_plot(figure_id, 312)
+        self.dhcp_plot_id_3 = self.create_plot(figure_id, 313)
 
     def create_scrollable_text_area(self, container):
 

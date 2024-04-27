@@ -16,9 +16,9 @@ Sovelluksella on vain yhdenlaisia käyttäjiä, joten käyttäjänhallintaa ei t
         - [ ] Osoitteiden kokonaismäärä
         - [ ] Liikenteen jakautuminen protokollittain
     - [ ] Protokollakohtaiset tiedot
-        - [ ] DHCP
-            - [ ] Lista tunnistetuista DHCP-palvelimista
-            - [ ] Lista tunnistetuista reitittimistä
+        - [x] DHCP
+            - [x] Lista tunnistetuista DHCP-palvelimista
+            - [x] Lista tunnistetuista domaineista
             - [x] Lista tunnistetuista asiakkaista
         - [x] DNS
             - [x] Graafi tunnistetuista DNS-palvelimista
