@@ -16,7 +16,7 @@ class DNSDir(EnumProperty):
 
 
 class DNSQType(EnumProperty):
-
+    "Generated with ChatGPT."
     UNKNOWN = None
     A = 1             # IPv4 address
     NS = 2            # Name server
@@ -96,6 +96,7 @@ class DNSQType(EnumProperty):
 
 
 class DNSOpCode(EnumProperty):
+    "Generated with ChatGPT."
     UNKNOWN = None
     QUERY = 0         # Standard query (RFC 1035)
     IQUERY = 1        # Inverse query (deprecated by RFC 3425)

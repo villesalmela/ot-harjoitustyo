@@ -31,7 +31,7 @@ Sovelluksella on vain yhdenlaisia käyttäjiä, joten käyttäjänhallintaa ei t
 - [x] Käyttäjä voi avata aiemmin tallennettun analyysin
 ## Jatkokehitysideoita
 - [ ] Käyttäjä voi rajata analyysin koskemaan tiettyjä osoitteita
-- [ ] Käyttäjä voi täydentää analyysiä valitsemalla seuraavan tiedoston
+- [x] Käyttäjä voi täydentää analyysiä valitsemalla seuraavan tiedoston
 - [ ] Käyttäjä voi tarkastella analyysin tuloksia erilaisten visualisointien avulla
     - [x] Aluediagrammi: Tiedonsiirron nopeus ajan suhteen
     - [ ] Ympyrädiagrammi: Liikenteen jakautuminen protokollittain

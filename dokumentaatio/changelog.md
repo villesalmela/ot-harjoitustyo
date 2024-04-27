@@ -69,6 +69,8 @@
 - Lisätty toiminnallisuuksia
     - Käyttäjä voi tarkistaa yhteenvedon, joka sisältää
         - Yleisimmät asiakkaat DHCP paketeista
+        - Yleisimmät domainit DHCP paketeista
+        - Yleisimmät palvelimet DHCP paketeista
     - Käyttäjä näkee dashboard-tyylisistä indikaattoreista
         - Pakettien määrän
         - Siirretyn datan määrän
@@ -76,6 +78,9 @@
     - Käyttäjä voi katsoa graafista
         - Yleisimmät DNS-palvelimet DNS paketeista
         - Tiedonsiirron nopeus
+    - Käyttäjä voi tallentaa analyysin tietokantaan
+    - Käyttäjä voi ladata analyysin tietokannasta
+    - Käyttäjä voi lisätä analyysiin monta tiedostoa
 - Parannettu pakettien parsintaa
     - Lisätty virheenkäsittelyä
     - Lisätty lokitusta

@@ -16,6 +16,7 @@ class ICMPVersion(EnumProperty):
 
 
 class ICMPType(EnumProperty):
+    "Generated with ChatGPT."
     UNKNOWN = None
     ECHO_REPLY = 0
     DEST_UNREACH = 3
@@ -52,6 +53,7 @@ class ICMPType(EnumProperty):
 
 
 class ICMPCode(EnumProperty):
+    "Generated with ChatGPT."
     UNKNOWN = None
     # No Code
     NO_CODE = 0
@@ -105,6 +107,7 @@ class ICMPCode(EnumProperty):
 
 
 class ICMPv6Type(EnumProperty):
+    "Generated with ChatGPT."
     UNKNOWN = None
     DESTINATION_UNREACHABLE = 1
     PACKET_TOO_BIG = 2
@@ -154,6 +157,7 @@ class ICMPv6Type(EnumProperty):
 
 
 class ICMPv6Code(EnumProperty):
+    "Generated with ChatGPT."
     UNKNOWN = None
     # No Code
     NO_CODE = 0

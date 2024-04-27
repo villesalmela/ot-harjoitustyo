@@ -108,9 +108,6 @@ components: {
   LayerLevel -> LayerConfig: {
     class: composition
   }
-  properties -> LayerConfig: {
-    class: aggregation
-  }
   class: package
   LayerLevel: {
     class: enum
@@ -141,22 +138,6 @@ components: {
   }
   \.\.\. -> LayerConfig: {
     class: implementation
-  }
-
-  properties: {
-    class: package
-    HardwareType: {
-      class: enum
-    }
-    ARPOpCode: {
-      class: enum
-    }
-    ICMPCode: {
-      class: enum
-    }
-    \.\.\.: {
-      class: enum
-    }
   }
 }
 
