@@ -21,7 +21,10 @@ class Packet:
             "packet.size": self.size,
         }
         for layer_type, layer in self.layers.items():
-            d.update({layer_type: layer.__dict__})
+            contents = layer.__dict__.copy()
+            contents[f"{layer.layer_name}.data"] = contents["data"]
+            del contents["data"]
+            d.update({f"{layer_type}": contents})
         return flatten_dict(d)
 
     def __str__(self) -> str:

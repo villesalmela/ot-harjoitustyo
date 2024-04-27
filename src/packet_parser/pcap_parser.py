@@ -13,21 +13,14 @@ from scapy.layers.dhcp import DHCP, BOOTP
 
 from components.packet import Packet as myPacket
 from components.layer import Layer
-from layers.properties.ip_version import IPVersion
-from layers.properties.icmp_version import ICMPVersion
-from layers.properties.cooked_packet_type import CookedPacketType
-from layers.properties.arp_opcode import ARPOpCode
-from layers.properties.hardware_type import HardwareType
-from layers.properties.icmp_code import ICMPCode, ICMPType
-from layers.properties.icmpv6_code import ICMPv6Code, ICMPv6Type
 from layers.layer_level import LayerLevel
 from layers.ethernet import Ethernet as myEthernet
-from layers.sll import SLL as mySLL
-from layers.ip import IP as myIP
-from layers.icmp import ICMP as myICMP
+from layers.sll import SLL as mySLL, CookedPacketType
+from layers.ip import IP as myIP, IPVersion
+from layers.icmp import ICMP as myICMP, ICMPVersion, ICMPCode, ICMPType, ICMPv6Code, ICMPv6Type
 from layers.tcp import TCP as myTCP
 from layers.udp import UDP as myUDP
-from layers.arp import ARP as myARP
+from layers.arp import ARP as myARP, ARPOpCode, HardwareType
 from layers.raw import RAW as myRaw
 from packet_parser.dns_parser import DNSParser
 from packet_parser.dhcp_parser import DHCPParser
@@ -178,7 +171,7 @@ class PcapParser:
         identifier = getattr(icmp_layer, "id", None)
         seq = getattr(icmp_layer, "seq", None)
         checksum_valid = self.verify_checksum(packet_number, icmp_layer)
-        return myICMP(ICMPVersion.ICMPV4, icmp_type, icmp_code, seq, identifier,
+        return myICMP(ICMPVersion.ICMPV4, icmp_type, icmp_code, None, None, seq, identifier,
                       checksum_valid), len(icmp_layer), len(icmp_layer.payload)
 
     def parse_icmpv6(self, packet_number: int, packet: Packet) -> tuple[myICMP, int, int]:
@@ -191,7 +184,7 @@ class PcapParser:
         identifier = getattr(icmp_layer, "id", None)
         seq = getattr(icmp_layer, "seq", None)
         checksum_valid = self.verify_checksum(packet_number, icmp_layer)
-        return myICMP(ICMPVersion.ICMPV6, icmp_type, icmp_code, seq, identifier,
+        return myICMP(ICMPVersion.ICMPV6, None, None, icmp_type, icmp_code, seq, identifier,
                       checksum_valid), len(icmp_layer), len(icmp_layer.payload)
 
     def parse_link(self, packet_number: int, packet: Packet) -> Layer:

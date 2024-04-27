@@ -1,9 +1,26 @@
+from typing import Any
+
 from layers.layer_config import LayerConfig
 from layers.layer_level import LayerLevel
-from layers.properties.ip_version import IPVersion
+from components.enum_property import EnumProperty
+
+
+class IPVersion(EnumProperty):
+    UNKNOWN = None
+    IPV4 = 4
+    IPV6 = 6
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN
 
 
 class IP(LayerConfig):
+
+    layer_type = LayerLevel.NETWORK
+    layer_name = "IP"
+    data: dict[str, Any]
+
     def __init__(
             self,
             version: IPVersion,
@@ -11,16 +28,9 @@ class IP(LayerConfig):
             dst_addr: str,
             checksum_valid: bool | None) -> None:
 
-        if version == IPVersion.IPV4:
-            super().__init__(LayerLevel.NETWORK, version.name, {
-                "src_addr": src_addr,
-                "dst_addr": dst_addr,
-                "checksum_valid": checksum_valid
-            })
-        elif version == IPVersion.IPV6:
-            super().__init__(LayerLevel.NETWORK, version.name, {
-                "src_addr": src_addr,
-                "dst_addr": dst_addr
-            })
-        else:
-            raise ValueError(f"Unsupported IP version: {version}")
+        self.data = {
+            "src_addr": src_addr,
+            "dst_addr": dst_addr,
+            "version": version,
+            "checksum_valid": checksum_valid
+        }

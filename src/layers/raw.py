@@ -3,6 +3,12 @@ from layers.layer_level import LayerLevel
 
 
 class RAW(LayerConfig):
-    def __init__(self, layer_level: LayerLevel) -> None:
 
-        super().__init__(layer_level, "RAW", {})
+    layer_name = "RAW"
+    layer_type: LayerLevel
+    data: dict
+
+    def __init__(self, layer_type: LayerLevel) -> None:
+
+        self.layer_type = layer_type
+        self.data = {}

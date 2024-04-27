@@ -1,7 +1,5 @@
 from scapy.layers.dhcp import DHCP, BOOTP
-from layers.dhcp import DHCP as myDHCP
-from layers.properties.dhcp_message_type import DHCPMessageType
-from layers.properties.bootp_opcode import BOOTPOpCode
+from layers.dhcp import DHCP as myDHCP, DHCPMessageType, BOOTPOpCode
 from utils.utils import convert_mac
 
 
