@@ -280,10 +280,12 @@ class PcapUi(tk.Tk):
     @with_loading_screen
     def update(self):
 
+        details = self.context.df["packet.str"].str.cat(sep="\n")
+
         result = self.analyze_function(self.context)
         self.reset(keep_context=True)
-        produced_text, dns_domains, dns_servers, speed_config, indicators, dhcp_clients, dhcp_servers, dhcp_domains = result
-        self.display_text(text_area_id=self.summary_text_area_id, text=produced_text)
+        dns_domains, dns_servers, speed_config, indicators, dhcp_clients, dhcp_servers, dhcp_domains = result
+        self.display_text(text_area_id=self.summary_text_area_id, text=details)
         self.display_bar_graph(self.dns_plot_id_1, dns_domains)
         self.display_bar_graph(self.dns_plot_id_2, dns_servers)
         self.display_bar_graph(self.dhcp_plot_id_1, dhcp_clients)

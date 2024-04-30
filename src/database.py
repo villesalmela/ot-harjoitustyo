@@ -3,7 +3,6 @@ import json
 from uuid import UUID
 
 import pandas as pd
-import numpy as np
 
 from layers.dns import DNS, DNSDir, DNSOpCode, DNSQType, DNSRCode
 from layers.dhcp import DHCP, DHCPMessageType, BOOTPOpCode
@@ -12,6 +11,7 @@ from layers.icmp import ICMP, ICMPCode, ICMPType, ICMPv6Code, ICMPv6Type, ICMPVe
 from layers.ip import IP, IPVersion
 from layers.sll import SLL, CookedPacketType
 from layers.ethernet import Ethernet
+from components.storage import Storage
 
 ENUM_PROPERTIES = [
     DNSDir, DNSOpCode, DNSQType, DNSRCode,
@@ -22,74 +22,58 @@ ENUM_PROPERTIES = [
     CookedPacketType
 ]
 
-BOOLEAN_COLUMNS = [
-    "NETWORK.IP.data.checksum_valid",
-    "TRANSPORT.TCP.data.checksum_valid",
-    "TRANSPORT.UDP.data.checksum_valid",
-    "TRANSPORT.ICMP.data.checksum_valid"
-]
 
-# Handle conversion of UUID objects
+class DBStorage(Storage):
+    def __init__(self, filename: str) -> None:
+        self.conn = sqlite3.connect(filename, detect_types=sqlite3.PARSE_DECLTYPES)
+        self.dtype = self.build_dtypes()
+        sqlite3.register_adapter(UUID, self.adapt_uuid)
+        sqlite3.register_converter('uuid', self.convert_uuid)
+        sqlite3.register_adapter(list, self.adapt_list)
+        sqlite3.register_adapter(dict, self.adapt_dict)
+        sqlite3.register_converter('TEXT', self.convert_text)
 
+        # Handle conversion of EnumProperty objects
+        for enum in ENUM_PROPERTIES:
+            enum.register()
 
-def adapt_uuid(uuid_obj: UUID) -> bytes:
-    return uuid_obj.bytes
+    def save(self, data: pd.DataFrame, name: str = "packets") -> None:
+        data.to_sql(name, self.conn, if_exists="replace", dtype=self.dtype)
 
+    def load(self, name: str = "packets") -> pd.DataFrame:
+        return pd.read_sql(f"SELECT * FROM {name}", self.conn, index_col="packet.uid")
 
-def convert_uuid(b: bytes) -> UUID:
-    return UUID(bytes=b)
+    # Handle conversion of UUID objects
+    @staticmethod
+    def adapt_uuid(uuid_obj: UUID) -> bytes:
+        return uuid_obj.bytes
 
+    @staticmethod
+    def convert_uuid(b: bytes) -> UUID:
+        return UUID(bytes=b)
 
-sqlite3.register_adapter(UUID, adapt_uuid)
-sqlite3.register_converter('uuid', convert_uuid)
+    # Handle conversion of json-like objects
+    @staticmethod
+    def adapt_list(list_obj) -> bytes:
+        return json.dumps(list_obj).encode('utf-8')
 
-# Handle conversion of json-like objects
+    @staticmethod
+    def adapt_dict(dict_obj) -> bytes:
+        return json.dumps(dict_obj).encode('utf-8')
 
+    @staticmethod
+    def convert_text(b: bytes) -> str:
+        text = b.decode('utf-8')
+        if (text.startswith('[') and text.endswith(']')) \
+                or (text.startswith('{') and text.endswith('}')):
+            return json.loads(text)
+        return text
 
-def adapt_list(list_obj) -> bytes:
-    return json.dumps(list_obj).encode('utf-8')
-
-
-def adapt_dict(dict_obj) -> bytes:
-    return json.dumps(dict_obj).encode('utf-8')
-
-
-def convert_text(b: bytes) -> str:
-    text = b.decode('utf-8')
-    if (text.startswith('[') and text.endswith(']')) \
-            or (text.startswith('{') and text.endswith('}')):
-        return json.loads(text)
-    return text
-
-
-sqlite3.register_adapter(list, adapt_list)
-sqlite3.register_adapter(dict, adapt_dict)
-sqlite3.register_converter('TEXT', convert_text)
-
-# Handle conversion of EnumProperty objects
-for enum in ENUM_PROPERTIES:
-    enum.register()
-
-# Handle conversion of boolean objects
-
-
-def fix_bool(df: pd.DataFrame) -> None:
-    for col in BOOLEAN_COLUMNS:
-        if col in df:
-            df[col] = df[col].astype("boolean")
-
-
-# Get types for database schema
-def build_dtypes() -> dict[str, str]:
-    dtype = {}
-    for layer in [ARP, DHCP, DNS, ICMP, IP, SLL, Ethernet]:
-        dtype.update(layer.get_db_types())
-    dtype["packet.uid"] = "uuid"
-    return dtype
-
-# Adjust dataframe dtypes before saving to context
-
-
-def adjust_dtypes(df: pd.DataFrame) -> pd.DataFrame:
-    fix_bool(df)
-    return df.replace({"": pd.NA, None: pd.NA, np.nan: pd.NA}).convert_dtypes()
+    # Get types for database schema
+    @staticmethod
+    def build_dtypes() -> dict[str, str]:
+        dtype = {}
+        for layer in [ARP, DHCP, DNS, ICMP, IP, SLL, Ethernet]:
+            dtype.update(layer.get_db_types())
+        dtype["packet.uid"] = "uuid"
+        return dtype

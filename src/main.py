@@ -1,5 +1,4 @@
-import sqlite3
-
+import numpy as np
 import pandas as pd
 
 from packet_parser.pcap_parser import PcapParser
@@ -19,11 +18,19 @@ pd.set_option('future.no_silent_downcasting', True)
 # pd.set_option('display.max_rows', None)
 # pd.set_option('display.width', 300)
 
+BOOLEAN_COLUMNS = [
+    "NETWORK.IP.data.checksum_valid",
+    "TRANSPORT.TCP.data.checksum_valid",
+    "TRANSPORT.UDP.data.checksum_valid",
+    "TRANSPORT.ICMP.data.checksum_valid"
+]
+
 
 class Context:
     def __init__(self) -> None:
         self.details = ""
         self.df = pd.DataFrame()
+        self.storage = database.DBStorage("database.db")
 
     def get_df(self):
         return self.df.copy()
@@ -33,22 +40,10 @@ class Context:
         self.df = pd.DataFrame()
 
     def save(self, table_name: str = "packets"):
-        conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
-        dtype = database.build_dtypes()
-        self.df.to_sql(table_name, conn, if_exists="replace", dtype=dtype)
-        conn.execute('CREATE TABLE IF NOT EXISTS "details" ("packets_table" TEXT, "data" TEXT)')
-        conn.execute('INSERT INTO "details" ("packets_table", "data") VALUES (?, ?)',
-                     (table_name, self.details))
-        conn.commit()
-        conn.close()
+        self.storage.save(self.df, table_name)
 
     def load(self, table_name: str = "packets"):
-        conn = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
-        self.df = pd.read_sql(f"SELECT * FROM {table_name}", conn, index_col="packet.uid")
-        self.df = database.adjust_dtypes(self.df)
-        self.details = conn.execute(
-            "SELECT data FROM details WHERE packets_table = ?", (table_name,)).fetchone()[0]
-        conn.close()
+        self.df = self.adjust_dtypes(self.storage.load(table_name))
 
     def append(self, filename: str):
         # Parse the PCAP file
@@ -58,10 +53,21 @@ class Context:
         for packet in parsed_packets:
             self.details += str(packet) + "\n"
 
-        flat_packets = [packet.flatten() for packet in parsed_packets]
+        flat_packets = []
+        for packet in parsed_packets:
+            flat_packet = packet.flatten()
+            flat_packet.update({"packet.str": str(packet)})
+            flat_packets.append(flat_packet)
         df = pd.DataFrame(flat_packets).set_index("packet.uid")
         self.df = pd.concat([self.df, df])
-        self.df = database.adjust_dtypes(self.df)
+        self.df = self.adjust_dtypes(self.df)
+
+    @staticmethod
+    def adjust_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+        for col in BOOLEAN_COLUMNS:
+            if col in df:
+                df[col] = df[col].astype("boolean")
+        return df.replace({"": pd.NA, None: pd.NA, np.nan: pd.NA}).convert_dtypes()
 
 
 def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:
@@ -169,7 +175,7 @@ def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
         "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    return ctx.details, dns1_config, dns2_config, speed_config, indicators, dhcp1_config, \
+    return dns1_config, dns2_config, speed_config, indicators, dhcp1_config, \
         dhcp2_config, dhcp3_config
 
 
