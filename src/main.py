@@ -72,7 +72,7 @@ class Context:
 
 def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:
     # Get the time series data
-    bytes_per_second, max_bytes_per_second = base_analyzer.time_series(100)
+    bytes_per_second, max_bytes_per_second = base_analyzer.time_series_speed(100)
 
     # Convert bytes to bits
     bits_per_second = convert_to_bits(bytes_per_second)
