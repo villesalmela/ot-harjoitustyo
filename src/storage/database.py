@@ -11,7 +11,7 @@ from layers.icmp import ICMP, ICMPCode, ICMPType, ICMPv6Code, ICMPv6Type, ICMPVe
 from layers.ip import IP, IPVersion
 from layers.sll import SLL, CookedPacketType
 from layers.ethernet import Ethernet
-from components.storage import Storage
+from storage.storage import Storage
 
 ENUM_PROPERTIES = [
     DNSDir, DNSOpCode, DNSQType, DNSRCode,

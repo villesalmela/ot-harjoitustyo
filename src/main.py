@@ -8,7 +8,7 @@ from analyzer.base_analyzer import BaseAnalyzer
 from ui import ui
 from ui.figure_config import FigureConfig
 from utils.utils import scale_bits, convert_to_bits
-import database
+from storage.database import DBStorage
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -30,7 +30,7 @@ class Context:
     def __init__(self) -> None:
         self.details = ""
         self.df = pd.DataFrame()
-        self.storage = database.DBStorage("database.db")
+        self.storage = DBStorage("database.db")
 
     def get_df(self):
         return self.df.copy()
