@@ -12,7 +12,8 @@ class DNSAnalyzer:
         """Initializes the analyzer with provided packets and filters out all but selected DNS
         packets.
 
-        Args:     packets (pd.DataFrame): one packet per row
+        Args:
+            packets (pd.DataFrame): one packet per row
         """
         selector = packets[f"{LayerLevel.APPLICATION}.layer_name"] == "DNS"
         self.packets = packets[selector]
@@ -34,9 +35,11 @@ class DNSAnalyzer:
     def most_queried_domains(self, n=10) -> dict[str, int]:
         """Get the most commonly queried domains, grouped by second level domain.
 
-        Args:     n (int, optional): How many domains to return. Defaults to 10.
+        Args:
+            n (int, optional): How many domains to return. Defaults to 10.
 
-        Returns:     dict[str, int]: domain, count
+        Returns:
+            dict[str, int]: domain, count
         """
         if self.packets.empty:
             return {}
@@ -46,9 +49,11 @@ class DNSAnalyzer:
     def most_common_servers(self, n=10) -> dict[str, int]:
         """Get the most commonly used DNS servers.
 
-        Args:     n (int, optional): How many servers to return. Defaults to 10.
+        Args:
+            n (int, optional): How many servers to return. Defaults to 10.
 
-        Returns:     dict[str, int]: IP, count
+        Returns:
+            dict[str, int]: IP, count
         """
         if self.packets.empty:
             return {}

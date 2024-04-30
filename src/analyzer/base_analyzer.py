@@ -10,17 +10,19 @@ class BaseAnalyzer:
     def __init__(self, packets: pd.DataFrame) -> None:
         """Initializes the analyzer with provided packets.
 
-        Args:     packets (pd.DataFrame): one packet per row
+        Args:
+            packets (pd.DataFrame): one packet per row
         """
         self.packets = packets
 
     def time_series_speed(self, interval_count_target: int) -> tuple[pd.Series, pd.Series]:
         """Generate time series for the speed graph.
 
-        Args:     interval_count_target (int): Preferred number of intervals in the resulting
-        series.
+        Args:
+            interval_count_target (int): Preferred number of intervals in the resulting series.
 
-        Returns:     tuple[pd.Series, pd.Series]: AVG bytes per second, MAX bytes per second
+        Returns:
+            tuple[pd.Series, pd.Series]: AVG bytes per second, MAX bytes per second
         """
         time_df = self.packets.copy()
         time_df.set_index("packet.time", inplace=True)
@@ -44,14 +46,16 @@ class BaseAnalyzer:
     def total_size(self) -> float:
         """Get total size of all packets.
 
-        Returns:     float: total number of bytes
+        Returns:
+            float: total number of bytes
         """
         return self.packets["packet.size"].sum()
 
     def time_range_and_duration(self) -> tuple[pd.Timestamp, pd.Timestamp, pd.Timedelta]:
         """Get time range and total duration of all packets.
 
-        Returns:     tuple[pd.Timestamp, pd.Timestamp, pd.Timedelta]: start time, end time, duration
+        Returns:
+            tuple[pd.Timestamp, pd.Timestamp, pd.Timedelta]: start time, end time, duration
         """
         time_earliest = self.packets["packet.time"].min()
         time_latest = self.packets["packet.time"].max()
