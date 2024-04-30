@@ -3,6 +3,7 @@ from layers.dns import DNS as myDNS, DNSDir, DNSOpCode, DNSQType, DNSRCode
 
 
 class DNSParser:
+    """Parser for DNS packets."""
 
     @classmethod
     def parse_dns(cls, dns_layer: DNS) -> tuple[myDNS, int, int]:
@@ -31,13 +32,13 @@ class DNSParser:
 
     @staticmethod
     def parse_dns_answers(dns_layer) -> list[dict[str, str | int]]:
-        """Generated with ChatGPT.
+        """Parse DNS answers from the DNS layer.
 
-        Parse DNS answers from a Scapy DNS layer object to extract answer fields and their values in
-        a dictionary.
+        Args:
+            dns_layer (_type_): The DNS layer
 
-        :param dns_layer: Scapy DNS response object
-        :return: dictionary containing answer fields and their values
+        Returns:
+            list[dict[str, str | int]]: List of dictionaries with answer details
         """
         answers = []
         answer_rr = dns_layer.an  # Start with the first answer in the response
