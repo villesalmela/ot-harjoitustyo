@@ -10,8 +10,7 @@ class BaseAnalyzer:
     def __init__(self, packets: pd.DataFrame) -> None:
         """Initializes the analyzer with provided packets.
 
-        Args:
-            packets (pd.DataFrame): one packet per row
+        Args:     packets (pd.DataFrame): one packet per row
         """
         self.packets = packets
 
