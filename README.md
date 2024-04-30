@@ -12,7 +12,8 @@ indikaattori (pakettien määrä, tallennuksen kesto, jne.).
 [Vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)  
 [Changelog](dokumentaatio/changelog.md)  
 [Release](https://github.com/villesalmela/ot-harjoitustyo/releases/tag/Viikko5)  
-[Arkkitehtuuri](dokumentaatio/arkkitehtuuri.md)
+[Arkkitehtuuri](dokumentaatio/arkkitehtuuri.md)  
+[Käyttöohje](dokumentaatio/käyttöohje.md)
 
 
 ## Asennus
@@ -40,13 +41,3 @@ Testikattavuusraportin voi generoida komennolla:
 poetry run invoke coverage-report
 ```
 Raportti generoituu _htmlcov_-hakemistoon.
-
-## Peruskäyttö
-1. Avaa valitsemasi PCAP-tiedosto
-    - Näppäinkomennolla Ctrl+O tai valikosta File -> Open File
-    - "assets" kansiossa on pari esimerkkitiedostoa
-2. Tarkasta tiedot kummallakin välilehdellä
-3. Resetoi ohjelma alkutilanteeseen
-    - Näppäinkomennolla Ctrl+R tai valikosta File -> Reset
-4. Poistu ohjelmasta
-    - Näppäinkomennolla Ctrl+Q tai valikosta File -> Exit

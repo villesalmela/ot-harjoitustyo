@@ -1,5 +1,10 @@
 # Arkkitehtuuri
 ## Yleiskuva
+Ohjelma käynnistyy main.py tiedostolla, joka luo sovellukselle Context-olion tilatiedon tallentamiseksi.
+main hoitaa yhteydet tietokantaan storage-moduulin kautta, suorittaa parsinnan packet_parser-moduulin avulla, analysoi paketit analyzer-moduulin avulla, ja lopuksi paketoi tulokset käyttöliittymälle sopivaan muotoon FigureConfig-olioiksi.
+
+Parsinnan tuloksena tieto tallennetaan Packet-olioihin, jotka sisältävät Layer-olioita. Layer-oliot konfiguroidaan LayerConfig-olioilla, joilla jokaisella on LayerLevel attribuuttinsa, joka ilmaisee sen sijainnin neliportaisessa verkkopinossa: link, network, transport ja application.
+
 <img src="overview.svg">
 
 ## Sekvenssikaavio

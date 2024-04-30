@@ -30,5 +30,6 @@
 | 25.4. | 3    | lisätty konteksti sovelluksen tilan ylläpitoa varten |
 | 27.4. | 2    | lisätty DHCP tilastoja |
 | 27.4. | 8    | lisätty tallennus/lataus, tähän liittyvää refactorointia |
-| 30.4. | 2    | eriytetty tietokantatoiminnot omaan luokkaansa |
-| summa | 77   | |
+| 30.4. | 3    | eriytetty tietokantatoiminnot omaan luokkaansa |
+| 30.4. | 2    | dokumentaatiota |
+| summa | 80   | |
