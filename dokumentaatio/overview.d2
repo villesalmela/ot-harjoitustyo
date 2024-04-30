@@ -1,5 +1,5 @@
 # SHARED PROPERTIES
-direction: right
+direction: up
 classes: {
   package: {
     shape: rectangle
@@ -46,11 +46,22 @@ classes: {
 }
 
 # Objects
-# larger font
 main: {
   class: package
   Context: {
     class: class
+  }
+}
+storage: {
+  class: package
+  Storage: {
+    class: abstract
+  }
+  DBStorage: {
+    class: class
+  } 
+  DBStorage -> Storage: {
+    class: implementation
   }
 }
 ui: {
@@ -160,6 +171,9 @@ analyzer -> components: {
 }
 \layers'.LayerConfig -> components.Layer: {
   class: composition
+}
+main.Context -> storage.DBStorage: {
+  class: dependency
 }
 
 # Explaining colors
