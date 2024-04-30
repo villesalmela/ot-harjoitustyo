@@ -304,24 +304,6 @@ graph = ["objgraph (>=1.7.2)"]
 profile = ["gprof2dot (>=2022.7.29)"]
 
 [[package]]
-name = "docformatter"
-version = "1.7.5"
-description = "Formats docstrings to follow PEP 257"
-optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "docformatter-1.7.5-py3-none-any.whl", hash = "sha256:a24f5545ed1f30af00d106f5d85dc2fce4959295687c24c8f39f5263afaf9186"},
-    {file = "docformatter-1.7.5.tar.gz", hash = "sha256:ffed3da0daffa2e77f80ccba4f0e50bfa2755e1c10e130102571c890a61b246e"},
-]
-
-[package.dependencies]
-charset_normalizer = ">=3.0.0,<4.0.0"
-untokenize = ">=0.1.1,<0.2.0"
-
-[package.extras]
-tomli = ["tomli (>=2.0.0,<3.0.0)"]
-
-[[package]]
 name = "filelock"
 version = "3.13.4"
 description = "A platform independent file lock."
@@ -1061,16 +1043,6 @@ files = [
 ]
 
 [[package]]
-name = "untokenize"
-version = "0.1.1"
-description = "Transforms tokens into original source code (while preserving whitespace)."
-optional = false
-python-versions = "*"
-files = [
-    {file = "untokenize-0.1.1.tar.gz", hash = "sha256:3865dbbbb8efb4bb5eaa72f1be7f3e0be00ea8b7f125c69cbd1f5fda926f37a2"},
-]
-
-[[package]]
 name = "urllib3"
 version = "2.2.1"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1090,4 +1062,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "3f2f37b0107b77fe159907c2611513c177e37ed20b619a68e990e4a9f2a978e8"
+content-hash = "1362b6089e16b549c78c63f9b53af32ac3a80c26105b8b789355a8f131f5f8d1"
