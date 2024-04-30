@@ -6,8 +6,10 @@ from components.enum_property import EnumProperty
 
 
 class ARPOpCode(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ARP layer, holding Operation Code.
+
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     REQUEST = 1       # ARP Request
     REPLY = 2         # ARP Reply
     RARP_REQUEST = 3  # Reverse ARP Request
@@ -18,14 +20,12 @@ class ARPOpCode(EnumProperty):
     INARP_REQUEST = 8  # InARP Request
     INARP_REPLY = 9   # InARP Reply
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
 
 class HardwareType(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ARP layer, holding Harware Type.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     ETHERNET_10MB = 1
     ETHERNET_3MB = 2
     AX_25 = 3
@@ -69,6 +69,7 @@ class HardwareType(EnumProperty):
 
 
 class ARP(LayerConfig):
+    """Configuration for ARP layer."""
 
     layer_type = LayerLevel.NETWORK
     layer_name = "ARP"
@@ -82,6 +83,16 @@ class ARP(LayerConfig):
             hwdst: str,
             psrc: str,
             pdst: str) -> None:
+        """Initializes ARP configuration object with provided details.
+
+        Args:
+            hwtype (HardwareType): Hardware Type
+            opcode (ARPOpCode): Operation Code
+            hwsrc (str): Source address on hardware level
+            hwdst (str): Destination address on hardware level
+            psrc (str): Source address on protocol level
+            pdst (str): Destination address on protocol level
+        """
 
         self.data = {
             "hwtype": hwtype,

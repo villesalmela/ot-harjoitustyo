@@ -7,6 +7,7 @@ from layers.layer_level import LayerLevel
 
 
 class LayerConfig(ABC):
+    """Base class for layer configuration objects."""
 
     layer_type: LayerLevel
     layer_name: str
@@ -18,6 +19,12 @@ class LayerConfig(ABC):
 
     @classmethod
     def get_db_types(cls) -> dict[str, str]:
+        """Analyzes the init functions's type hints, finds Enum type parameters and returns the
+        column name and type name for each.
+
+        Returns:
+            dict[str, str]: column name, type name
+        """
         out = {}
         hints = get_type_hints(cls.__init__)
         for name, hint_type in hints.items():

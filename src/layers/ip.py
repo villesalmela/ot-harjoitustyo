@@ -6,16 +6,14 @@ from components.enum_property import EnumProperty
 
 
 class IPVersion(EnumProperty):
-    UNKNOWN = None
+    """Property of IP layer, holding the version number.
+    
+    Will not raise ValueError if called with invalid value, returns None instead."""
     IPV4 = 4
     IPV6 = 6
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class IP(LayerConfig):
+    """Configuration for IP layer."""
 
     layer_type = LayerLevel.NETWORK
     layer_name = "IP"
@@ -27,6 +25,14 @@ class IP(LayerConfig):
             src_addr: str,
             dst_addr: str,
             checksum_valid: bool | None) -> None:
+        """Initializes IP configuration object with provided details.
+
+        Args:
+            version (IPVersion): either v4 or v6
+            src_addr (str): source address
+            dst_addr (str): destination address
+            checksum_valid (bool | None): True if checksum is valid, False otherwise (only for v4).
+        """
 
         self.data = {
             "src_addr": src_addr,

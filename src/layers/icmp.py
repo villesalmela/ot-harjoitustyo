@@ -6,18 +6,18 @@ from components.enum_property import EnumProperty
 
 
 class ICMPVersion(EnumProperty):
-    UNKNOWN = None
+    """Property of ICMP layer, holding the version number.
+    
+    Will not raise ValueError if called with invalid value, returns None instead."""
     ICMPV4 = 4
     ICMPV6 = 6
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
 
 class ICMPType(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ICMP layer, holding Type number for v4.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     ECHO_REPLY = 0
     DEST_UNREACH = 3
     SOURCE_QUENCH = 4
@@ -47,14 +47,11 @@ class ICMPType(EnumProperty):
     EXTENDED_ECHO_REQUEST = 42
     EXTENDED_ECHO_REPLY = 43
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class ICMPCode(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ICMP layer, holding Code number for v4.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     # No Code
     NO_CODE = 0
 
@@ -107,8 +104,10 @@ class ICMPCode(EnumProperty):
 
 
 class ICMPv6Type(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ICMP layer, holding Type number for v6.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     DESTINATION_UNREACHABLE = 1
     PACKET_TOO_BIG = 2
     TIME_EXCEEDED = 3
@@ -151,14 +150,11 @@ class ICMPv6Type(EnumProperty):
     PRIVATE_EXPERIMENTATION_3 = 200
     PRIVATE_EXPERIMENTATION_4 = 201
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class ICMPv6Code(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of ICMP layer, holding Code number for v6.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     # No Code
     NO_CODE = 0
 
@@ -240,6 +236,7 @@ class ICMPv6Code(EnumProperty):
 
 
 class ICMP(LayerConfig):
+    """Configuration for ICMP layer."""
 
     layer_type = LayerLevel.TRANSPORT
     layer_name = "ICMP"
@@ -255,6 +252,18 @@ class ICMP(LayerConfig):
             seq: int | None,
             identifier: int | None,
             checksum_valid: bool) -> None:
+        """Initializes ICMP configuration object with provided details.
+
+        Args:
+            version (ICMPVersion): either v4 or v6
+            icmp_type_v4 (ICMPType): High level category for v4
+            icmp_code_v4 (ICMPCode): Low level category for v4
+            icmp_type_v6 (ICMPv6Type): High level category for v6
+            icmp_code_v6 (ICMPv6Code): High level category for v6
+            seq (int | None): Sequence number
+            identifier (int | None): Identifier number
+            checksum_valid (bool): True if checksum is valid, False otherwise
+        """
 
         self.data = {
             "icmp_type_v4": icmp_type_v4,

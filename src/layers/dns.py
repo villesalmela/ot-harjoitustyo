@@ -6,18 +6,18 @@ from components.enum_property import EnumProperty
 
 
 class DNSDir(EnumProperty):
-    UNKNOWN = None
+    """Property of DNS layer, holding Direction.
+    
+    Will not raise ValueError if called with invalid value, returns None instead."""
     QUERY = 0
     RESPONSE = 1
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
 
 class DNSQType(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of DNS layer, holding Query Type.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     A = 1             # IPv4 address
     NS = 2            # Name server
     MD = 3            # Mail destination (Obsolete - use MX)
@@ -90,14 +90,11 @@ class DNSQType(EnumProperty):
     URI = 256         # URI
     CAA = 257         # Certification Authority Authorization
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class DNSOpCode(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of DNS layer, holding Direction.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     QUERY = 0         # Standard query (RFC 1035)
     IQUERY = 1        # Inverse query (deprecated by RFC 3425)
     STATUS = 2        # Server status request (RFC 1035)
@@ -107,14 +104,11 @@ class DNSOpCode(EnumProperty):
     STATEFUL = 6      # DNS Stateful Operations (DSO) (RFC 8490)
     # Opcodes 7-15 are reserved for future use
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class DNSRCode(EnumProperty):
-    "Generated with ChatGPT."
-    UNKNOWN = None
+    """Property of DNS layer, holding Return Code.
+    
+    Will not raise ValueError if called with invalid value, returns None instead.
+    Generated with ChatGPT."""
     NOERROR = 0   # No Error
     FORMERR = 1   # Format Error
     SERVFAIL = 2  # Server Failure
@@ -127,12 +121,8 @@ class DNSRCode(EnumProperty):
     NOTAUTH = 9   # Server Not Authoritative for zone
     NOTZONE = 10  # Name not contained in zone
 
-    @classmethod
-    def _missing_(cls, value):
-        return cls.UNKNOWN
-
-
 class DNS(LayerConfig):
+    """Configuration for DNS layer."""
 
     layer_type = LayerLevel.APPLICATION
     layer_name = "DNS"
@@ -147,6 +137,17 @@ class DNS(LayerConfig):
                  qname: str | None,
                  answers: list[dict[str, str | int]] | None = None
                  ) -> None:
+        """Initializes DNS configuration object with provided details.
+
+        Args:
+            transaction_id (int): id number that identifies transactions
+            direction (DNSDir): indicating either query or response
+            opcode (DNSOpCode): Operation Code
+            qtype (DNSQType): Query Type
+            rcode (DNSRCode): Return Code
+            qname (str | None): the queried name
+            answers (list[dict[str, str  |  int]] | None, optional): various answer details. Defaults to None.
+        """
 
         self.data = {
             "transaction_id": transaction_id,
