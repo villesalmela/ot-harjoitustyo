@@ -9,6 +9,7 @@ from ui import ui
 from ui.figure_config import FigureConfig
 from utils.utils import scale_bits, convert_to_bits
 from storage.database import DBStorage
+from config import DB_PATH
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -31,6 +32,7 @@ class Context:
         self.details = ""
         self.df = pd.DataFrame()
         self.storage = DBStorage("database.db")
+        self.storage = DBStorage(DB_PATH)
 
     def get_df(self):
         return self.df.copy()
