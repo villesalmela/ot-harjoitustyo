@@ -29,6 +29,7 @@ from utils.utils import convert_mac
 
 class ParsingError(Exception):
     """Failed to parse a packet."""
+
     def __init__(self, packet_number: int, layer_level: str, packet: Packet) -> None:
         """Initialize ParsingError exception.
 
@@ -53,6 +54,7 @@ class ParsingError(Exception):
 
 class UnsupportedLayerError(Exception):
     """Unsupported layer in a packet."""
+
     def __init__(self, layer: Packet) -> None:
         """Initialize UnsupportedLayerError exception.
 
@@ -72,6 +74,7 @@ class PcapParser:
         self.checksum_log = ""
         self.error_log = ""
         self.support_log = ""
+        Path("logs").mkdir(parents=True, exist_ok=True)
 
     def verify_checksum(self, packet_number: int, layer) -> bool:
         """Verify checksum of a layer.
@@ -125,7 +128,8 @@ class PcapParser:
                 (LayerLevel.LINK, self.parse_link),
                 (LayerLevel.NETWORK, self.parse_network),
                 (LayerLevel.TRANSPORT, self.parse_transport),
-                    (LayerLevel.APPLICATION, self.parse_application)]:
+                (LayerLevel.APPLICATION, self.parse_application)
+            ]:
                 try:
                     layer = layer_parser(packet_number, packet)
                     parsed_packet.layers[layer_level] = layer
@@ -143,7 +147,6 @@ class PcapParser:
                     packet = packet.payload
             self.parsed_packets.append(parsed_packet)
 
-        Path("logs").mkdir(parents=True, exist_ok=True)
         Path("logs/support.log").write_text(self.support_log, encoding="utf-8")
         Path("logs/checksum.log").write_text(self.checksum_log, encoding="utf-8")
         Path("logs/error.log").write_text(self.error_log, encoding="utf-8")
