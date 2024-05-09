@@ -8,6 +8,7 @@ class Ethernet(LayerConfig):
     layer_type = LayerLevel.LINK
     layer_name = "Ethernet"
     data: dict[str, str]
+    dtypes = {}
 
     def __init__(self, src_addr: str, dst_addr: str) -> None:
         """Initializes Ethernet configuration object with provided details.

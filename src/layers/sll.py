@@ -25,6 +25,9 @@ class SLL(LayerConfig):
     layer_type = LayerLevel.LINK
     layer_name = "SLL"
     data: dict[str, Any]
+    dtypes = {
+        "packet_type": CookedPacketType
+    }
 
     def __init__(self, src_addr: str, packet_type: CookedPacketType, protocol_type: str) -> None:
         """Initializes SLL configuration object with provided details.

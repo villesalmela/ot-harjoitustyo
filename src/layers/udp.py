@@ -10,6 +10,7 @@ class UDP(LayerConfig):
     layer_type = LayerLevel.TRANSPORT
     layer_name = "UDP"
     data: dict[str, Any]
+    dtypes = {}
 
     def __init__(self, src_port: int, dst_port: int, checksum_valid: bool) -> None:
         """Initializes UDP configuration object with provided details.

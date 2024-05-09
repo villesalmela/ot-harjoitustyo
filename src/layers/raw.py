@@ -10,6 +10,7 @@ class RAW(LayerConfig):
     layer_name = "RAW"
     layer_type: LayerLevel
     data: dict
+    dtypes = {}
 
     def __init__(self, layer_type: LayerLevel) -> None:
         """Initializes RAW configuration object with the provided layer level.

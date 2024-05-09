@@ -19,6 +19,9 @@ class IP(LayerConfig):
     layer_type = LayerLevel.NETWORK
     layer_name = "IP"
     data: dict[str, Any]
+    dtypes = {
+        "version": IPVersion
+    }
 
     def __init__(
             self,

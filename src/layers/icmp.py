@@ -245,14 +245,19 @@ class ICMP(LayerConfig):
     layer_type = LayerLevel.TRANSPORT
     layer_name = "ICMP"
     data: dict[str, Any]
+    dtypes = {
+        "icmp_type_v4": ICMPType,
+        "icmp_code_v4": ICMPCode,
+        "icmp_type_v6": ICMPv6Type,
+        "icmp_code_v6": ICMPv6Code,
+        "version": ICMPVersion
+    }
 
     def __init__(
             self,
             version: ICMPVersion,
-            icmp_type_v4: ICMPType,
-            icmp_code_v4: ICMPCode,
-            icmp_type_v6: ICMPv6Type,
-            icmp_code_v6: ICMPv6Code,
+            icmp_type: ICMPType | ICMPv6Type,
+            icmp_code: ICMPCode | ICMPv6Code,
             seq: int | None,
             identifier: int | None,
             checksum_valid: bool) -> None:
@@ -260,20 +265,18 @@ class ICMP(LayerConfig):
 
         Args:
             version (ICMPVersion): either v4 or v6
-            icmp_type_v4 (ICMPType): High level category for v4
-            icmp_code_v4 (ICMPCode): Low level category for v4
-            icmp_type_v6 (ICMPv6Type): High level category for v6
-            icmp_code_v6 (ICMPv6Code): High level category for v6
+            icmp_type (ICMPType | ICMPv6Type): High level category
+            icmp_code (ICMPCode | ICMPv6Code): Low level category
             seq (int | None): Sequence number
             identifier (int | None): Identifier number
             checksum_valid (bool): True if checksum is valid, False otherwise
         """
 
         self.data = {
-            "icmp_type_v4": icmp_type_v4,
-            "icmp_code_v4": icmp_code_v4,
-            "icmp_type_v6": icmp_type_v6,
-            "icmp_code_v6": icmp_code_v6,
+            "icmp_type_v4": icmp_type if version == ICMPVersion.ICMPV4 else None,
+            "icmp_code_v4": icmp_code if version == ICMPVersion.ICMPV4 else None,
+            "icmp_type_v6": icmp_type if version == ICMPVersion.ICMPV6 else None,
+            "icmp_code_v6": icmp_code if version == ICMPVersion.ICMPV6 else None,
             "version": version,
             "seq": seq,
             "identifier": identifier,

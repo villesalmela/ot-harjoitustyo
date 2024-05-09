@@ -130,6 +130,12 @@ class DNS(LayerConfig):
     layer_type = LayerLevel.APPLICATION
     layer_name = "DNS"
     data: dict[str, Any]
+    dtypes = {
+        "direction": DNSDir,
+        "opcode": DNSOpCode,
+        "qtype": DNSQType,
+        "rcode": DNSRCode
+    }
 
     def __init__(self,
                  transaction_id: int,

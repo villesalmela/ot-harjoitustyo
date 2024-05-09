@@ -34,6 +34,10 @@ class DHCP(LayerConfig):
     layer_type = LayerLevel.APPLICATION
     layer_name = "DHCP"
     data: dict[str, Any]
+    dtypes = {
+        "operation": BOOTPOpCode,
+        "message_type": DHCPMessageType
+    }
 
     def __init__(self, protocol_data: dict[str, Any],
                  client_data: dict[str, Any],
@@ -63,17 +67,3 @@ class DHCP(LayerConfig):
             "name_server": network_data["name_server"],
             "router": network_data["router"]
         }
-
-    @classmethod
-    def get_db_types(cls) -> dict[str, str]:
-        """Get the location and type of custom objects, that need to be adapted for database
-        operations.
-
-        Returns:
-            dict[str, str]: column_name, class_name
-        """
-        out = {
-            f"{cls.layer_type}.{cls.layer_name}.data.operation": BOOTPOpCode.__name__,
-            f"{cls.layer_type}.{cls.layer_name}.data.message_type": DHCPMessageType.__name__
-        }
-        return out

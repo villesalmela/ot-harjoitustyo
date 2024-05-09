@@ -74,6 +74,10 @@ class ARP(LayerConfig):
     layer_type = LayerLevel.NETWORK
     layer_name = "ARP"
     data: dict[str, Any]
+    dtypes = {
+        "hwtype": HardwareType,
+        "opcode": ARPOpCode
+    }
 
     def __init__(
             self,

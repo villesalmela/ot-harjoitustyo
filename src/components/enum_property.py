@@ -14,8 +14,14 @@ class EnumProperty(Enum, metaclass=EnumPropertyMeta):
     """Parent for all layer properties, provides the common functions shared by all of them."""
 
     def __init_subclass__(cls) -> None:
-        """Ensures that all sub-classes of EnumProperty have an UNKNOWN value defined
-        and it's not overridden."""
+        """Extends the sub-classes with additional functionality.
+
+        Ensures that all sub-classes of EnumProperty have an UNKNOWN value defined
+        and it's not overridden.
+
+        Raises:
+            ValueError: If the sub-class has an UNKNOWN value defined.
+        """
         if hasattr(cls, "UNKNOWN"):
             raise ValueError("EnumProperty sub-classes cannot have an UNKNOWN value defined.")
         cls.UNKNOWN = None
