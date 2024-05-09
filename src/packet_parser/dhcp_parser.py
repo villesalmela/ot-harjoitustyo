@@ -17,7 +17,7 @@ class DHCPParser:
         Returns:
             tuple[myDHCP, int, int]: parsed DHCP packet, total size, payload size in bytes
         """
-        
+
         def _get_option(options, key):
             for option in options:
                 if option[0] == key:
