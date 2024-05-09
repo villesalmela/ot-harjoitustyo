@@ -6,7 +6,7 @@ from components.enum_property import EnumProperty
 
 class DHCPMessageType(EnumProperty):
     """Property of DHCP layer, holding Message Type.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     DHCPDISCOVER = 1
@@ -18,13 +18,15 @@ class DHCPMessageType(EnumProperty):
     DHCPRELEASE = 7
     DHCPINFORM = 8
 
+
 class BOOTPOpCode(EnumProperty):
     """Property of BOOTP layer, holding BOOTP Operation Code.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     BOOTREQUEST = 1  # Used by a client to request configuration from servers
     BOOTREPLY = 2    # Used by a server to reply to a client's request
+
 
 class DHCP(LayerConfig):
     """Configuration for DHCP layer."""
@@ -41,7 +43,8 @@ class DHCP(LayerConfig):
 
         Args:
             protocol_data (dict[str, Any]): operation, message_type, transaction_id
-            client_data (dict[str, Any]): client_ip_current, client_ip_assigned, client_mac, client_hostname
+            client_data (dict[str, Any]): client_ip_current, client_ip_assigned,
+                client_mac, client_hostname
             server_data (dict[str, Any]): server_ip, server_hostname
             network_data (dict[str, Any]): domain, name_server, router
         """

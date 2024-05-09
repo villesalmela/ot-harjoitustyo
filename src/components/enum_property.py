@@ -1,25 +1,25 @@
 import sqlite3
-from enum import EnumMeta, Enum
-
-class ExtendableEnumMeta(EnumMeta):
-    """Customized EnumMeta class that allows for the definition of members on the parent level."""
-    
-    @classmethod
-    def _check_for_existing_members_(mcls, class_name, bases):
-        """By overriding this function in the Enum metaclass, we can now define members on the
-        parent level without error.
-        """
-        pass
+from enum import Enum, EnumMeta
 
 
-class EnumProperty(Enum, metaclass=ExtendableEnumMeta):
-    """Parent for all layer properties, provides the common functions shared by all of them.
+class EnumPropertyMeta(EnumMeta):
+    def __call__(cls, *args, **kwds):
+        """Prevents instantiation of the base class EnumProperty."""
+        if cls.__name__ == "EnumProperty":
+            raise ValueError(f"Cannot instantiate {cls.__name__}, it's a base class.")
+        return super().__call__(*args, **kwds)
 
-    Args:
-        Enum (class): Inherits the Enum class.
-    """
-    
-    UNKNOWN = None
+
+class EnumProperty(Enum, metaclass=EnumPropertyMeta):
+    """Parent for all layer properties, provides the common functions shared by all of them."""
+
+    def __init_subclass__(cls) -> None:
+        """Ensures that all sub-classes of EnumProperty have an UNKNOWN value defined
+        and it's not overridden."""
+        if hasattr(cls, "UNKNOWN"):
+            raise ValueError("EnumProperty sub-classes cannot have an UNKNOWN value defined.")
+        cls.UNKNOWN = None
+        return super().__init_subclass__()
 
     @classmethod
     def _missing_(cls, value):

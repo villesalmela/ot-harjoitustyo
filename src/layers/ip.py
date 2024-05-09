@@ -7,10 +7,11 @@ from components.enum_property import EnumProperty
 
 class IPVersion(EnumProperty):
     """Property of IP layer, holding the version number.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead."""
     IPV4 = 4
     IPV6 = 6
+
 
 class IP(LayerConfig):
     """Configuration for IP layer."""

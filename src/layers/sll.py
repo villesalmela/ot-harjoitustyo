@@ -7,7 +7,7 @@ from components.enum_property import EnumProperty
 
 class CookedPacketType(EnumProperty):
     """Property of SLL layer, holding Cooked Packet Type.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead."""
     UNICAST = 0
     BROADCAST = 1
@@ -15,9 +15,10 @@ class CookedPacketType(EnumProperty):
     UNICAST_TO_ANOTHER_HOST = 3
     SENT_BY_US = 4
 
+
 class SLL(LayerConfig):
     """Configuration for SLL layer.
-    
+
     SLL (Linux cooked capture) is a link layer protocol used by Linux for packet capture.
     """
 

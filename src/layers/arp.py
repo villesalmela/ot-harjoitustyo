@@ -23,7 +23,7 @@ class ARPOpCode(EnumProperty):
 
 class HardwareType(EnumProperty):
     """Property of ARP layer, holding Harware Type.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     ETHERNET_10MB = 1

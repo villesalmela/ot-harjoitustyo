@@ -7,7 +7,7 @@ from components.enum_property import EnumProperty
 
 class DNSDir(EnumProperty):
     """Property of DNS layer, holding Direction.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead."""
     QUERY = 0
     RESPONSE = 1
@@ -15,7 +15,7 @@ class DNSDir(EnumProperty):
 
 class DNSQType(EnumProperty):
     """Property of DNS layer, holding Query Type.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     A = 1             # IPv4 address
@@ -90,9 +90,10 @@ class DNSQType(EnumProperty):
     URI = 256         # URI
     CAA = 257         # Certification Authority Authorization
 
+
 class DNSOpCode(EnumProperty):
     """Property of DNS layer, holding Direction.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     QUERY = 0         # Standard query (RFC 1035)
@@ -104,9 +105,10 @@ class DNSOpCode(EnumProperty):
     STATEFUL = 6      # DNS Stateful Operations (DSO) (RFC 8490)
     # Opcodes 7-15 are reserved for future use
 
+
 class DNSRCode(EnumProperty):
     """Property of DNS layer, holding Return Code.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     NOERROR = 0   # No Error
@@ -120,6 +122,7 @@ class DNSRCode(EnumProperty):
     NXRRSET = 8   # RR Set that should exist does not
     NOTAUTH = 9   # Server Not Authoritative for zone
     NOTZONE = 10  # Name not contained in zone
+
 
 class DNS(LayerConfig):
     """Configuration for DNS layer."""
@@ -146,7 +149,7 @@ class DNS(LayerConfig):
             qtype (DNSQType): Query Type
             rcode (DNSRCode): Return Code
             qname (str | None): the queried name
-            answers (list[dict[str, str  |  int]] | None, optional): various answer details. Defaults to None.
+            answers (list[dict[str, str  |  int]] | None, optional): various answer details.
         """
 
         self.data = {

@@ -4,7 +4,7 @@ from layers.layer_level import LayerLevel
 
 class RAW(LayerConfig):
     """Configuration for RAW layer.
-    
+
     This layer is used when no other layer is applicable."""
 
     layer_name = "RAW"

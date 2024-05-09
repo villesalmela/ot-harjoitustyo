@@ -7,7 +7,7 @@ from components.enum_property import EnumProperty
 
 class ICMPVersion(EnumProperty):
     """Property of ICMP layer, holding the version number.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead."""
     ICMPV4 = 4
     ICMPV6 = 6
@@ -15,7 +15,7 @@ class ICMPVersion(EnumProperty):
 
 class ICMPType(EnumProperty):
     """Property of ICMP layer, holding Type number for v4.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     ECHO_REPLY = 0
@@ -47,11 +47,13 @@ class ICMPType(EnumProperty):
     EXTENDED_ECHO_REQUEST = 42
     EXTENDED_ECHO_REPLY = 43
 
+
 class ICMPCode(EnumProperty):
     """Property of ICMP layer, holding Code number for v4.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
+
     # No Code
     NO_CODE = 0
 
@@ -100,12 +102,12 @@ class ICMPCode(EnumProperty):
             _, icmp_code = value
             if icmp_code == 0:
                 return cls.NO_CODE
-        return cls.UNKNOWN
+        return cls.UNKNOWN  # defined during subclassing
 
 
 class ICMPv6Type(EnumProperty):
     """Property of ICMP layer, holding Type number for v6.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
     DESTINATION_UNREACHABLE = 1
@@ -150,11 +152,13 @@ class ICMPv6Type(EnumProperty):
     PRIVATE_EXPERIMENTATION_3 = 200
     PRIVATE_EXPERIMENTATION_4 = 201
 
+
 class ICMPv6Code(EnumProperty):
     """Property of ICMP layer, holding Code number for v6.
-    
+
     Will not raise ValueError if called with invalid value, returns None instead.
     Generated with ChatGPT."""
+
     # No Code
     NO_CODE = 0
 
@@ -232,7 +236,7 @@ class ICMPv6Code(EnumProperty):
             _, icmp_code = value
             if icmp_code is None or icmp_code == 0:
                 return cls.NO_CODE
-        return cls.UNKNOWN
+        return cls.UNKNOWN  # defined during subclassing
 
 
 class ICMP(LayerConfig):
