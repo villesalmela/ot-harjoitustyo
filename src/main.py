@@ -29,16 +29,13 @@ BOOLEAN_COLUMNS = [
 
 class Context:
     def __init__(self) -> None:
-        self.details = ""
         self.df = pd.DataFrame()
-        self.storage = DBStorage("database.db")
         self.storage = DBStorage(DB_PATH)
 
     def get_df(self):
         return self.df.copy()
 
     def reset(self):
-        self.details = ""
         self.df = pd.DataFrame()
 
     def save(self, table_name: str = "packets"):
@@ -48,12 +45,7 @@ class Context:
         self.df = self.adjust_dtypes(self.storage.load(table_name))
 
     def append(self, filename: str):
-        # Parse the PCAP file
         parsed_packets = PcapParser().parse_pcap(filename)
-
-        # Get packet details
-        for packet in parsed_packets:
-            self.details += str(packet) + "\n"
 
         flat_packets = []
         for packet in parsed_packets:
@@ -177,8 +169,8 @@ def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
         "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    return dns1_config, dns2_config, speed_config, indicators, dhcp1_config, \
-        dhcp2_config, dhcp3_config
+    return (dns1_config, dns2_config, speed_config, indicators, dhcp1_config, 
+        dhcp2_config, dhcp3_config)
 
 
 if __name__ == '__main__':
