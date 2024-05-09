@@ -21,6 +21,7 @@ pytest = "^8.1.1"
 coverage = "^7.4.4"
 pylint = "^3.1.0"
 autopep8 = "^2.1.0"
+pytest-dotenv = "^0.5.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -47,4 +48,9 @@ omit = [
     "src/**/__init__.py",
     "src/tests/**",
     "src/ui/**",
+    ]
+
+[tool.pytest.ini_options]
+env_files = [
+    ".env.test"
     ]
