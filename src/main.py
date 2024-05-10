@@ -32,17 +32,26 @@ class Context:
         self.df = pd.DataFrame()
         self.storage = DBStorage(DB_PATH)
 
+    def __len__(self):
+        return len(self.df)
+
     def get_df(self):
         return self.df.copy()
 
     def reset(self):
         self.df = pd.DataFrame()
 
-    def save(self, table_name: str = "packets"):
-        self.storage.save(self.df, table_name)
+    def save(self, name: str):
+        self.storage.save(self.df, name)
 
-    def load(self, table_name: str = "packets"):
-        self.df = self.adjust_dtypes(self.storage.load(table_name))
+    def load(self, name: str):
+        self.df = self.adjust_dtypes(self.storage.load(name))
+
+    def list_slots(self):
+        return self.storage.list_slots()
+
+    def del_slot(self, name: str):
+        self.storage.del_slot(name)
 
     def append(self, filename: str):
         parsed_packets = PcapParser().parse_pcap(filename)
@@ -169,8 +178,8 @@ def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
         "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    return (dns1_config, dns2_config, speed_config, indicators, dhcp1_config, 
-        dhcp2_config, dhcp3_config)
+    return (dns1_config, dns2_config, speed_config, indicators, dhcp1_config,
+            dhcp2_config, dhcp3_config)
 
 
 if __name__ == '__main__':

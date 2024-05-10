@@ -1,7 +1,7 @@
 from threading import Thread
 from functools import wraps
 import tkinter as tk
-from tkinter import ttk, filedialog, scrolledtext, PhotoImage, messagebox, StringVar
+from tkinter import ttk, filedialog, scrolledtext, PhotoImage, messagebox, StringVar, simpledialog, Listbox
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -93,7 +93,10 @@ class PcapUi(tk.Tk):
         self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
 
         menu_data = [
-            ("Open File...", "Ctrl+O", "<Control-o>", self.open_file),
+            ("Add New Capture...", "Ctrl+N", "<Control-n>", self.open_file),
+            ("Load Analysis..", "Ctrl+O", "<Control-o>", self.load),
+            ("Save Analysis..", "Ctrl+S", "<Control-s>", self.save),
+            ("Delete Analysis..", "Ctrl+D", "<Control-d>", self.delete),
             ("Reset", "Ctrl+R", "<Control-r>", self.reset),
             ("Exit", "Ctrl+Q", "<Control-q>", self.close)
         ]
@@ -117,7 +120,7 @@ class PcapUi(tk.Tk):
         self.load_button = ttk.Button(self.frame, text="Load", command=self.load)
         self.load_button.pack(side='right')
 
-        self.save_button = ttk.Button(self.frame, text="Save", command=self.save)
+        self.save_button = ttk.Button(self.frame, text="Save", command=self.save, state=tk.DISABLED)
         self.save_button.pack(side='right')
 
         # Create the notebook for tabs
@@ -299,12 +302,80 @@ class PcapUi(tk.Tk):
         self.display_indicator(self.starttime_id, indicators["start_time"])
         self.display_indicator(self.endtime_id, indicators["end_time"])
 
-    def load(self, table_name: str = "packets"):
-        self.context.load(table_name)
-        self.update()
+        if len(self.context) > 0:
+            self.save_button.config(state=tk.NORMAL)
 
-    def save(self, table_name: str = "packets"):
-        self.context.save(table_name)
+    def load(self):
+        if name := self.ask_slot():
+            self.context.load(name)
+            self.update()
+            messagebox.showinfo("Success", f"Loaded analysis from slot: {name}")
+
+    def save(self):
+        if name := self.ask_slot(create_option=True):
+            self.context.save(name)
+            messagebox.showinfo("Success", f"Saved analysis to slot: {name}")
+
+    def delete(self) -> None:
+        if name := self.ask_slot():
+            self.context.del_slot(name)
+            messagebox.showinfo("Success", f"Deleted analysis from slot: {name}")
+
+    def ask_slot(self, create_option=False, select_option=True):
+        slot = tk.StringVar()
+        slots = self.context.list_slots()
+        if not slots:
+            select_option = False
+
+        overlay = ttk.Frame(self)
+        overlay.place(x=1, y=1, relwidth=1, relheight=1)
+
+        inner_frame = ttk.Frame(overlay)
+        inner_frame.pack(expand=True)
+
+        lstbox = Listbox(inner_frame)
+        lstbox.pack(fill=tk.BOTH, expand=True)
+
+        def on_select():
+            selected_slot = lstbox.get(lstbox.curselection())
+            if selected_slot:
+                slot.set(selected_slot)
+            overlay.destroy()
+
+        def on_new():
+            if new_slot := simpledialog.askstring(
+                    "New Slot", "Enter new slot:", parent=inner_frame):
+                slot.set(new_slot)
+                overlay.destroy()
+
+        def on_listbox_select(event):
+            if lstbox.curselection():
+                select_button.config(state=tk.NORMAL, text="Confirm Selection")
+            else:
+                select_button.config(state=tk.DISABLED, text="Select a Slot")
+
+        lstbox.bind('<<ListboxSelect>>', on_listbox_select)
+
+        for item in slots:
+            lstbox.insert(tk.END, item)
+
+        if select_option:
+            select_button = ttk.Button(
+                inner_frame,
+                text="Select a Slot",
+                command=on_select,
+                state=tk.DISABLED)
+            select_button.pack(fill=tk.X)
+
+        if create_option:
+            new_button = ttk.Button(inner_frame, text="Create New Slot", command=on_new)
+            new_button.pack(fill=tk.X)
+
+        cancel_button = ttk.Button(inner_frame, text="Cancel", command=overlay.destroy)
+        cancel_button.pack(fill=tk.X)
+
+        overlay.wait_window()
+        return slot.get()
 
     def display_indicator(self, indicator_id, value):
         self.indicators[indicator_id].set(value)
@@ -492,6 +563,7 @@ class PcapUi(tk.Tk):
 
         if not keep_context:
             self.context.reset()
+            self.save_button.config(state=tk.DISABLED)
 
         # Resetting the text areas
         for text_area in self.text_areas.values():
