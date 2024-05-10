@@ -21,7 +21,7 @@ class DBStorage(Storage):
         data.to_sql(name, self.conn, if_exists="replace", dtype=self.dtype)
 
     def load(self, name: str = "packets") -> pd.DataFrame:
-        return pd.read_sql(f"SELECT * FROM {name}", self.conn, index_col="packet.uid")
+        return pd.read_sql("SELECT * FROM ?;", self.conn, index_col="packet.uid", params=(name,))
 
     @classmethod
     def register_uuid(cls) -> None:
