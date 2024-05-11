@@ -5,6 +5,7 @@ from pandas import Timestamp, Timedelta
 from main import Context
 from analyzer.base_analyzer import BaseAnalyzer
 
+
 class TestOverview(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -29,7 +30,7 @@ class TestOverview(unittest.TestCase):
             Timestamp('2005-03-30 11:52:25.375359'),
             Timedelta('0 days 00:04:38.879313')
         ))
-        
+
     def test_speed_series(self) -> None:
         bps, bps_max = self.base_analyzer.time_series_speed(interval_count_target=5)
         expected_bps = {

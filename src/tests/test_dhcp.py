@@ -31,7 +31,6 @@ class TestDHCP(unittest.TestCase):
         self.assertEqual(domain_counts["webernetz.net"], 1)
         self.assertEqual(domain_counts["weberlab.de"], 2)
 
-
     def test_dhcp_discover(self) -> None:
         dhcp_layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(dhcp_layer.data, {

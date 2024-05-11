@@ -1,6 +1,6 @@
-import numpy as np
 import pandas as pd
 
+import config
 from packet_parser.pcap_parser import PcapParser
 from analyzer.dns_analyzer import DNSAnalyzer
 from analyzer.dhcp_analyzer import DHCPAnalyzer
@@ -9,7 +9,6 @@ from ui import ui
 from ui.figure_config import FigureConfig
 from utils.utils import scale_bits, convert_to_bits
 from storage.database import DBStorage
-from config import DB_PATH
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -19,18 +18,11 @@ pd.set_option('future.no_silent_downcasting', True)
 # pd.set_option('display.max_rows', None)
 # pd.set_option('display.width', 300)
 
-BOOLEAN_COLUMNS = [
-    "NETWORK.IP.data.checksum_valid",
-    "TRANSPORT.TCP.data.checksum_valid",
-    "TRANSPORT.UDP.data.checksum_valid",
-    "TRANSPORT.ICMP.data.checksum_valid"
-]
-
 
 class Context:
-    def __init__(self) -> None:
+    def __init__(self, reset_db=False) -> None:
         self.df = pd.DataFrame()
-        self.storage = DBStorage(DB_PATH)
+        self.storage = DBStorage(config.DB_PATH, reset=reset_db)
 
     def __len__(self):
         return len(self.df)
@@ -45,7 +37,7 @@ class Context:
         self.storage.save(self.df, name)
 
     def load(self, name: str):
-        self.df = self.adjust_dtypes(self.storage.load(name))
+        self.df = self.storage.load(name)
 
     def list_slots(self):
         return self.storage.list_slots()
@@ -63,14 +55,7 @@ class Context:
             flat_packets.append(flat_packet)
         df = pd.DataFrame(flat_packets).set_index("packet.uid")
         self.df = pd.concat([self.df, df])
-        self.df = self.adjust_dtypes(self.df)
-
-    @staticmethod
-    def adjust_dtypes(df: pd.DataFrame) -> pd.DataFrame:
-        for col in BOOLEAN_COLUMNS:
-            if col in df:
-                df[col] = df[col].astype("boolean")
-        return df.replace({"": pd.NA, None: pd.NA, np.nan: pd.NA}).convert_dtypes()
+        self.df = DBStorage.adjust_dtypes(self.df)
 
 
 def configure_speed_graph(base_analyzer: BaseAnalyzer) -> FigureConfig:
@@ -171,7 +156,7 @@ def analyze_pcap(ctx: Context) -> dict:
     dhcp_servers = configure_dhcp_most_common_servers(dhcp_analyzer)
     dhcp_domains = configure_dhcp_most_common_domains(dhcp_analyzer)
     indicators = {
-        "packet_count": len(ctx.df),
+        "packet_count": base_analyzer.packet_count(),
         "data_amount": base_analyzer.total_size(),
         "duration": duration.total_seconds(),
         "start_time": start_time.strftime("%Y-%m-%d %H:%M:%S"),

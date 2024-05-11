@@ -23,6 +23,7 @@ class StreamToLogger:
     def flush(self):
         pass
 
+
 def configure_logging():
     """
     Redirects logs to a file.

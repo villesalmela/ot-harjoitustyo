@@ -8,6 +8,7 @@ from main import Context
 
 DB_PATH_TEST = "test_database.db"
 
+
 class TestDB(unittest.TestCase):
 
     def setUp(self) -> None:

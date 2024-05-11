@@ -16,6 +16,7 @@ import humanize
 from ui.figure_config import FigureConfig
 from utils.utils import check_file
 
+
 class StorageOverlay:
     def __init__(self, parent, slots, title, select=False, create=False) -> None:
         self.slots = slots
@@ -108,7 +109,8 @@ def with_loading_screen(func):
         inner_frame.pack(expand=True)
 
         # Add text
-        loading_label = ttk.Label(inner_frame, text="Please wait...", font=('Helvetica', 16, "bold"))
+        loading_label = ttk.Label(
+            inner_frame, text="Please wait...", font=('Helvetica', 16, "bold"))
         loading_label.pack()
 
         # Button to cancel the operation
@@ -431,7 +433,8 @@ class PcapUi(tk.Tk):
 
     def load(self):
         slots = self.context.list_slots()
-        storage_overlay = StorageOverlay(self, slots, "Loading from slot:", select=True, create=False)
+        storage_overlay = StorageOverlay(
+            self, slots, "Loading from slot:", select=True, create=False)
         if name := storage_overlay.ask_slot():
             self.context.load(name)
             self.update()
@@ -534,7 +537,8 @@ class PcapUi(tk.Tk):
         interval_count = len(data1)
 
         # Adding an infobox (Generated with ChatGPT)
-        info_text = f"Interval length: {humanize.naturaldelta(interval_length)}\nInterval count: {interval_count}"
+        info_text = f"Interval length: {humanize.naturaldelta(interval_length)}\n\
+            Interval count: {interval_count}"
         plot.text(
             0.05,
             0.95,

@@ -18,6 +18,7 @@ BOOLEAN_COLUMNS = [
     "TRANSPORT.ICMP.data.checksum_valid"
 ]
 
+
 class DBStorage(Storage):
     def __init__(self, filename: str, reset=False) -> None:
         self.filename = filename

@@ -3,3 +3,6 @@ __pycache__
 .DS_Store
 .coverage
 htmlcov
+logs
+database.db
+test_database.db
