@@ -182,12 +182,20 @@ class PcapUi(tk.Tk):
         self.config(menu=menu_bar)
 
     def _init_buttons(self):
-        self.map["button.reset"] = self.create_button(self.frame, "Reset", self.reset, tk.RIGHT)
-        self.map["button.load"] = self.create_button(self.frame, "Load", self.load, tk.LEFT)
+        group_left = ttk.LabelFrame(self.frame, text="Storage Operations", labelanchor='nw')
+        group_left.pack(side=tk.LEFT, padx=10)
+        group_right = ttk.LabelFrame(self.frame, text="Analysis Actions", labelanchor='ne')
+        group_right.pack(side=tk.RIGHT, padx=10)
+        self.map["button.load"] = self.create_button(
+            group_left, "Load...", self.load, tk.LEFT)
         self.map["button.save"] = self.create_button(
-            self.frame, "Save", self.save, tk.LEFT, state=tk.DISABLED)
-        self.map["button.delete"] = self.create_button(self.frame, "Delete", self.delete, tk.LEFT)
-        self.map["button.open"] = self.create_button(self.frame, "New Capture", self.open_file, tk.RIGHT)
+            group_left, "Save...", self.save, tk.LEFT, state=tk.DISABLED)
+        self.map["button.delete"] = self.create_button(
+            group_left, "Delete...", self.delete, tk.LEFT)
+        self.map["button.reset"] = self.create_button(
+            group_right, "Reset", self.reset, tk.RIGHT)
+        self.map["button.open"] = self.create_button(
+            group_right, "Add New Capture...", self.open_file, tk.RIGHT)
 
     def _init_tabs(self):
         # Create the notebook for tabs
