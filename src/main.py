@@ -154,7 +154,7 @@ def configure_dhcp_most_common_domains(dhcp_analyzer: DHCPAnalyzer) -> FigureCon
     return dhcp_config
 
 
-def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
+def analyze_pcap(ctx: Context) -> dict:
 
     # Prepare analyzers
     base_analyzer = BaseAnalyzer(ctx.get_df())
@@ -165,11 +165,11 @@ def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
     start_time, end_time, duration = base_analyzer.time_range_and_duration()
 
     speed_config = configure_speed_graph(base_analyzer)
-    dns1_config = configure_dns_most_queried_domains(dns_analyzer)
-    dns2_config = configure_dns_most_common_servers(dns_analyzer)
-    dhcp1_config = configure_dhcp_most_common_clients(dhcp_analyzer)
-    dhcp2_config = configure_dhcp_most_common_servers(dhcp_analyzer)
-    dhcp3_config = configure_dhcp_most_common_domains(dhcp_analyzer)
+    dns_domains = configure_dns_most_queried_domains(dns_analyzer)
+    dns_servers = configure_dns_most_common_servers(dns_analyzer)
+    dhcp_clients = configure_dhcp_most_common_clients(dhcp_analyzer)
+    dhcp_servers = configure_dhcp_most_common_servers(dhcp_analyzer)
+    dhcp_domains = configure_dhcp_most_common_domains(dhcp_analyzer)
     indicators = {
         "packet_count": len(ctx.df),
         "data_amount": base_analyzer.total_size(),
@@ -178,8 +178,15 @@ def analyze_pcap(ctx: Context) -> tuple[str | FigureConfig | dict, ...]:
         "end_time": end_time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    return (dns1_config, dns2_config, speed_config, indicators, dhcp1_config,
-            dhcp2_config, dhcp3_config)
+    return {
+        "dns_domains": dns_domains,
+        "dns_servers": dns_servers,
+        "speed_config": speed_config,
+        "indicators": indicators,
+        "dhcp_clients": dhcp_clients,
+        "dhcp_servers": dhcp_servers,
+        "dhcp_domains": dhcp_domains
+    }
 
 
 if __name__ == '__main__':
