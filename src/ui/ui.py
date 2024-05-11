@@ -11,28 +11,28 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import MaxNLocator
 import matplotlib.dates as mdates
+import humanize
 
 from ui.figure_config import FigureConfig
 from utils.utils import check_file
 
-
 class StorageOverlay:
-    def __init__(self, parent, select=False, create=False) -> None:
-        self.parent = parent
-        self.context = parent.context
+    def __init__(self, parent, slots, title, select=False, create=False) -> None:
+        self.slots = slots
         self.overlay = ttk.Frame(parent)
         self.overlay.place(x=1, y=1, relwidth=1, relheight=1)
 
         self.inner_frame = ttk.Frame(self.overlay)
         self.inner_frame.pack(expand=True)
+        ttk.Label(
+            self.inner_frame, text=title, font=('Helvetica', 16, "bold")).pack(
+                anchor=tk.CENTER, pady=10)
 
         self.listbox = Listbox(self.inner_frame, selectmode=tk.SINGLE)
-        self.listbox.pack(fill=tk.BOTH, expand=True)
+        self.listbox.pack(fill=tk.BOTH)
 
         self.slot = tk.StringVar()
-        self.slots = self.context.list_slots()
-        if not self.slots:
-            select = False
+        select = bool(self.slots)
         self._prepare_listbox()
 
         if select:
@@ -68,10 +68,11 @@ class StorageOverlay:
             self.overlay.destroy()
 
     def _on_listbox_select(self, event):
-        if event.widget.curselection():
-            self.select_button.config(state=tk.NORMAL, text="Confirm Selection")
-        else:
-            self.select_button.config(state=tk.DISABLED, text="Select a Slot")
+        if hasattr(self, "select_button"):
+            if event.widget.curselection():
+                self.select_button.config(state=tk.NORMAL, text="Confirm Selection")
+            else:
+                self.select_button.config(state=tk.DISABLED, text="Select a Slot")
 
     def ask_slot(self):
         self.overlay.wait_window()
@@ -107,7 +108,7 @@ def with_loading_screen(func):
         inner_frame.pack(expand=True)
 
         # Add text
-        loading_label = ttk.Label(inner_frame, text="Please wait...")
+        loading_label = ttk.Label(inner_frame, text="Please wait...", font=('Helvetica', 16, "bold"))
         loading_label.pack()
 
         # Button to cancel the operation
@@ -137,6 +138,9 @@ class PcapUi(tk.Tk):
         self.title('PCAP Analyzer')
         self.geometry('1200x800')
         self.iconphoto(True, PhotoImage(file='assets/icon.png'))
+        style = ttk.Style()
+        style.theme_use('default')
+        style.configure('TNotebook', tabposition='n')
 
         self.components = {
             "buttons": {},
@@ -183,19 +187,20 @@ class PcapUi(tk.Tk):
 
     def _init_buttons(self):
         group_left = ttk.LabelFrame(self.frame, text="Storage Operations", labelanchor='nw')
-        group_left.pack(side=tk.LEFT, padx=10)
+        group_left.pack(padx=10, pady=10, anchor=tk.N, side=tk.LEFT)
         group_right = ttk.LabelFrame(self.frame, text="Analysis Actions", labelanchor='ne')
-        group_right.pack(side=tk.RIGHT, padx=10)
+        group_right.pack(padx=10, pady=10, anchor=tk.N, side=tk.RIGHT)
         self.map["button.load"] = self.create_button(
-            group_left, "Load...", self.load, tk.LEFT)
+            group_left, "Load...", self.load)
         self.map["button.save"] = self.create_button(
-            group_left, "Save...", self.save, tk.LEFT, state=tk.DISABLED)
+            group_left, "Save...", self.save, state=tk.DISABLED)
         self.map["button.delete"] = self.create_button(
-            group_left, "Delete...", self.delete, tk.LEFT)
-        self.map["button.reset"] = self.create_button(
-            group_right, "Reset", self.reset, tk.RIGHT)
+            group_left, "Delete...", self.delete)
         self.map["button.open"] = self.create_button(
-            group_right, "Add New Capture...", self.open_file, tk.RIGHT)
+            group_right, "Add New Capture...", self.open_file)
+        self.map["button.reset"] = self.create_button(
+            group_right, "Reset", self.reset)
+        self._set_storage_button_states()
 
     def _init_tabs(self):
         # Create the notebook for tabs
@@ -214,7 +219,7 @@ class PcapUi(tk.Tk):
         notebook.add(tab4, text='DHCP')
 
         # Pack to make visible
-        notebook.pack(expand=True, fill=tk.BOTH)
+        notebook.pack(fill=tk.BOTH, expand=True)
 
         return tab1, tab2, tab3, tab4
 
@@ -223,14 +228,14 @@ class PcapUi(tk.Tk):
         self.map["indicator.packet_count"] = self.create_indicator(
             indicators_frame, 0, "Packet Count", 0, 0)
         self.map["indicator.data_amount"] = self.create_indicator(
-            indicators_frame, 0, "Data Amount", 0, 1)
+            indicators_frame, 0, "Total Size", 0, 1)
         self.map["indicator.duration"] = self.create_indicator(
             indicators_frame, 0, "Duration", 0, 2)
         self.map["indicator.starttime"] = self.create_indicator(
             indicators_frame, 0, "Start Time", 0, 3)
         self.map["indicator.endtime"] = self.create_indicator(
             indicators_frame, 0, "End Time", 0, 4)
-        indicators_frame.pack(expand=True)
+        indicators_frame.pack()
         figure_id = self.create_figure_and_canvas(tab1)
         self.map["plot.speed"] = self.create_plot(figure_id, 111, dual=True)
 
@@ -250,7 +255,7 @@ class PcapUi(tk.Tk):
 
     def _initialize_ui(self):
         self.frame = ttk.Frame(self)
-        self.frame.pack(padx=10, pady=10, fill='x', expand=False)
+        self.frame.pack(fill=tk.BOTH, ipadx=10, ipady=10)
 
         self._init_buttons()
         tabs = self._init_tabs()
@@ -258,7 +263,7 @@ class PcapUi(tk.Tk):
         for tab, prep in zip(tabs, preps):
             prep(tab)
 
-    def create_button(self, container, text, command, side, **kwds):
+    def create_button(self, container, text, command, **kwds):
 
         # Assigning a unique ID to the button
         button_id = self.ids["button"]
@@ -268,7 +273,7 @@ class PcapUi(tk.Tk):
         button = ttk.Button(container, text=text, command=command, **kwds)
 
         # Display the button
-        button.pack(padx=10, side=side)
+        button.pack(padx=10, side=tk.LEFT)
 
         # Store the button
         self.components["buttons"][button_id] = button
@@ -336,7 +341,7 @@ class PcapUi(tk.Tk):
 
         # Display the canvas
         canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
+        canvas_widget.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         # Store the canvas
         self.components["canvases"][figure_id] = canvas
@@ -401,8 +406,8 @@ class PcapUi(tk.Tk):
         indicators = result["indicators"]
         indicator_data = {
             "indicator.packet_count": indicators["packet_count"],
-            "indicator.data_amount": indicators["data_amount"],
-            "indicator.duration": indicators["duration"],
+            "indicator.data_amount": humanize.naturalsize(indicators["data_amount"]),
+            "indicator.duration": humanize.naturaldelta(indicators["duration"]),
             "indicator.starttime": indicators["start_time"],
             "indicator.endtime": indicators["end_time"]
         }
@@ -425,23 +430,36 @@ class PcapUi(tk.Tk):
             self.display_indicator(self.map[name], value)
 
     def load(self):
-        storage_overlay = StorageOverlay(self, select=True, create=False)
+        slots = self.context.list_slots()
+        storage_overlay = StorageOverlay(self, slots, "Loading from slot:", select=True, create=False)
         if name := storage_overlay.ask_slot():
             self.context.load(name)
             self.update()
             messagebox.showinfo("Success", f"Loaded analysis from slot: {name}")
 
     def save(self):
-        storage_overlay = StorageOverlay(self, select=True, create=True)
+        slots = self.context.list_slots()
+        storage_overlay = StorageOverlay(self, slots, "Saving to slot:", select=True, create=True)
         if name := storage_overlay.ask_slot():
             self.context.save(name)
+            self._set_storage_button_states()
             messagebox.showinfo("Success", f"Saved analysis to slot: {name}")
 
     def delete(self) -> None:
-        storage_overlay = StorageOverlay(self, select=True, create=False)
+        slots = self.context.list_slots()
+        storage_overlay = StorageOverlay(self, slots, "Deleting slot:", select=True, create=False)
         if name := storage_overlay.ask_slot():
             self.context.del_slot(name)
+            self._set_storage_button_states()
             messagebox.showinfo("Success", f"Deleted analysis from slot: {name}")
+
+    def _set_storage_button_states(self):
+        if self.context.list_slots():
+            self.components["buttons"][self.map["button.load"]].config(state=tk.NORMAL)
+            self.components["buttons"][self.map["button.delete"]].config(state=tk.NORMAL)
+        else:
+            self.components["buttons"][self.map["button.load"]].config(state=tk.DISABLED)
+            self.components["buttons"][self.map["button.delete"]].config(state=tk.DISABLED)
 
     def display_indicator(self, indicator_id, value):
         self.components["indicators"][indicator_id].set(value)
@@ -512,11 +530,11 @@ class PcapUi(tk.Tk):
 
     def _add_freq_info(self, plot, data1):
         # Info to display in the infobox
-        interval_length = data1.index.freqstr
+        interval_length = data1.index.freq.delta
         interval_count = len(data1)
 
         # Adding an infobox (Generated with ChatGPT)
-        info_text = f"Interval length: {interval_length}\nInterval count: {interval_count}"
+        info_text = f"Interval length: {humanize.naturaldelta(interval_length)}\nInterval count: {interval_count}"
         plot.text(
             0.05,
             0.95,
@@ -616,7 +634,7 @@ class PcapUi(tk.Tk):
         if not keep_context:
             self.context.reset()
             save_button = self.components["buttons"][self.map["button.save"]]
-            save_button.config(state=tk.NORMAL)
+            save_button.config(state=tk.DISABLED)
 
         # Resetting the text areas
         for text_area in self.components["text_areas"].values():
