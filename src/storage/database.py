@@ -1,22 +1,46 @@
 import sqlite3
 import json
 from uuid import UUID
+from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 from layers.layers import LAYERS
 from layers.properties import PROPERTIES
 from storage.storage import Storage
 
 
+BOOLEAN_COLUMNS = [
+    "NETWORK.IP.data.checksum_valid",
+    "TRANSPORT.TCP.data.checksum_valid",
+    "TRANSPORT.UDP.data.checksum_valid",
+    "TRANSPORT.ICMP.data.checksum_valid"
+]
+
 class DBStorage(Storage):
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str, reset=False) -> None:
+        self.filename = filename
+        if reset:
+            self.reset()
         self.conn = sqlite3.connect(filename, detect_types=sqlite3.PARSE_DECLTYPES)
         self.dtype = self.build_dtypes()
         self.register_properties()
         self.register_uuid()
         self.register_json()
         self.create_slot_table()
+
+    def reset(self) -> None:
+        file = Path(self.filename)
+        if file.exists():
+            file.unlink()
+
+    @staticmethod
+    def adjust_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+        for col in BOOLEAN_COLUMNS:
+            if col in df:
+                df[col] = df[col].astype("boolean")
+        return df.replace({"": pd.NA, None: pd.NA, np.nan: pd.NA}).convert_dtypes()
 
     def create_slot_table(self) -> None:
         cursor = self.conn.cursor()
@@ -49,7 +73,8 @@ class DBStorage(Storage):
 
     def load(self, name: str) -> pd.DataFrame:
         slot = self.get_slot_id(name)
-        return pd.read_sql(f"SELECT * FROM {slot};", self.conn, index_col="packet.uid")
+        df = pd.read_sql(f"SELECT * FROM {slot};", self.conn, index_col="packet.uid")
+        return self.adjust_dtypes(df)
 
     def list_slots(self) -> list[str]:
         cursor = self.conn.cursor()

@@ -21,6 +21,11 @@ class TestDNS(unittest.TestCase):
         self.assertEqual(domain_counts["google.com"], 10)
         self.assertEqual(domain_counts["isc.org"], 4)
 
+    def test_count_dns_servers(self) -> None:
+        server_counts = self.analyzer.most_common_servers()
+        self.assertEqual(server_counts["217.13.4.24"], 5)
+        self.assertEqual(server_counts["192.168.170.20"], 14)
+
     def test_dns_layer_query_data(self) -> None:
         dns_layer = self.parsed_packets[0].layers[LayerLevel.APPLICATION]
         self.assertEqual(dns_layer.data, {

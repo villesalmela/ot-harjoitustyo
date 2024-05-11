@@ -15,6 +15,14 @@ class BaseAnalyzer:
         """
         self.packets = packets
 
+    def packet_count(self) -> int:
+        """Get the number of packets.
+
+        Returns:
+            int: number of packets
+        """
+        return len(self.packets)
+
     def time_series_speed(self, interval_count_target: int) -> tuple[pd.Series, pd.Series]:
         """Generate time series for the speed graph.
 

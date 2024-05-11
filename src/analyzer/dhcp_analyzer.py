@@ -41,9 +41,9 @@ class DHCPAnalyzer:
             f"{LayerLevel.APPLICATION}.DHCP.data.client_hostname",
             f"{LayerLevel.APPLICATION}.DHCP.data.client_mac"
         ]
-        return self.acks.groupby(selector).size().head(n).to_dict()
+        return self.packets.groupby(selector).size().head(n).to_dict()
 
-    def most_common_servers(self, n=10) -> dict[str, int]:
+    def most_common_servers(self, n=10) -> dict[tuple[str, str], int]:
         """From the servers that have returned DHCPACKs, return the "n" most common ones.
 
         Args:
