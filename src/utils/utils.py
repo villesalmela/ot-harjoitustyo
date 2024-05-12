@@ -1,3 +1,5 @@
+from threading import Timer
+from typing import Callable
 from numbers import Number
 from enum import Enum
 import json
@@ -221,3 +223,9 @@ def check_file(filename: str):
 
     if size > FILESIZE_LIMIT:
         raise FileNotFoundError(f"File size exceeds the limit of {FILESIZE_LIMIT_STR}")
+
+
+def start_timer(seconds: int, command: Callable):
+    timer = Timer(seconds, command)
+    timer.start()
+    return timer
