@@ -9,6 +9,7 @@ from ui import ui
 from ui.figure_config import FigureConfig
 from utils.utils import scale_bits, convert_to_bits
 from storage.database import DBStorage
+from layers.layer_level import LayerLevel
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -139,6 +140,23 @@ def configure_dhcp_most_common_domains(dhcp_analyzer: DHCPAnalyzer) -> FigureCon
     return dhcp_config
 
 
+def configure_protocol_distribution(base_analyzer: BaseAnalyzer) -> dict:
+    protocol_distribution = base_analyzer.protocol_distribution()
+    app_config = FigureConfig(
+        "Application", protocol_distribution[LayerLevel.APPLICATION], None, None, None)
+    transport_config = FigureConfig(
+        "Transport", protocol_distribution[LayerLevel.TRANSPORT], None, None, None)
+    network_config = FigureConfig(
+        "Network", protocol_distribution[LayerLevel.NETWORK], None, None, None)
+    link_config = FigureConfig("Link", protocol_distribution[LayerLevel.LINK], None, None, None)
+    return {
+        LayerLevel.APPLICATION: app_config,
+        LayerLevel.TRANSPORT: transport_config,
+        LayerLevel.NETWORK: network_config,
+        LayerLevel.LINK: link_config
+    }
+
+
 def analyze_pcap(ctx: Context) -> dict:
 
     # Prepare analyzers
@@ -155,6 +173,7 @@ def analyze_pcap(ctx: Context) -> dict:
     dhcp_clients = configure_dhcp_most_common_clients(dhcp_analyzer)
     dhcp_servers = configure_dhcp_most_common_servers(dhcp_analyzer)
     dhcp_domains = configure_dhcp_most_common_domains(dhcp_analyzer)
+    protocol_distribution = configure_protocol_distribution(base_analyzer)
     indicators = {
         "packet_count": base_analyzer.packet_count(),
         "data_amount": base_analyzer.total_size(),
@@ -170,7 +189,8 @@ def analyze_pcap(ctx: Context) -> dict:
         "indicators": indicators,
         "dhcp_clients": dhcp_clients,
         "dhcp_servers": dhcp_servers,
-        "dhcp_domains": dhcp_domains
+        "dhcp_domains": dhcp_domains,
+        "protocol_distribution": protocol_distribution
     }
 
 

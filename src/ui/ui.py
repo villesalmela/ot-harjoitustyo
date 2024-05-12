@@ -14,7 +14,9 @@ import matplotlib.dates as mdates
 import humanize
 
 from ui.figure_config import FigureConfig
-from utils.utils import check_file
+from utils.utils import check_file, start_timer
+from layers.layer_level import LayerLevel
+from config import TIMEOUT_SECONDS
 
 
 class StorageOverlay:
@@ -86,44 +88,36 @@ def with_loading_screen(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        # Function to run in a separate thread
         def run():
             result[0] = func(*args, **kwargs)
             overlay.destroy()
 
-        # Function to stop the thread
-        def stop_thread():
+        def stop_thread(timeout=False):
             if thread.is_alive():
-                # Attempt to join the thread, timing out almost immediately
                 thread.join(timeout=0.1)
             overlay.destroy()
+            if timeout:
+                messagebox.showerror("Error",
+                                     "Operation timed out. \
+                                        You should restart the app to kill hanging threads.")
 
-        root = args[0]  # Assuming the first argument is always the Tkinter root
-
-        # Create an overlay frame
-        overlay = ttk.Frame(root)
+        overlay = ttk.Frame(args[0])
         overlay.place(x=1, y=1, relwidth=1, relheight=1)
 
-        # Inner frame to hold widgets
         inner_frame = ttk.Frame(overlay)
         inner_frame.pack(expand=True)
 
-        # Add text
-        loading_label = ttk.Label(
-            inner_frame, text="Please wait...", font=('Helvetica', 16, "bold"))
-        loading_label.pack()
+        ttk.Label(inner_frame, text="Please wait...", font=('Helvetica', 16, "bold")).pack()
+        ttk.Button(inner_frame, text="Cancel", command=stop_thread).pack()
 
-        # Button to cancel the operation
-        cancel_button = ttk.Button(inner_frame, text="Cancel", command=stop_thread)
-        cancel_button.pack()
-
-        # This will store the function's result
         result = [None]
-
-        # Start the thread
         thread = Thread(target=run, daemon=True)
+
+        # sometimes scapy gets stuck in infinite loop
         thread.start()
+        timer = start_timer(TIMEOUT_SECONDS, lambda: stop_thread(timeout=True))
         overlay.wait_window()
+        timer.cancel()
 
         return result[0]
 
@@ -213,17 +207,19 @@ class PcapUi(tk.Tk):
         tab2 = ttk.Frame(notebook)
         tab3 = ttk.Frame(notebook)
         tab4 = ttk.Frame(notebook)
+        tab5 = ttk.Frame(notebook)
 
         # Add tabs to the notebook
         notebook.add(tab1, text='Overview')
         notebook.add(tab2, text='Details')
         notebook.add(tab3, text='DNS')
         notebook.add(tab4, text='DHCP')
+        notebook.add(tab5, text='Protocols')
 
         # Pack to make visible
         notebook.pack(fill=tk.BOTH, expand=True)
 
-        return tab1, tab2, tab3, tab4
+        return tab1, tab2, tab3, tab4, tab5
 
     def _prepare_tab_1(self, tab1):
         indicators_frame = ttk.Frame(tab1)
@@ -255,13 +251,21 @@ class PcapUi(tk.Tk):
         self.map["plot.dhcp_2"] = self.create_plot(figure_id, 312)
         self.map["plot.dhcp_3"] = self.create_plot(figure_id, 313)
 
+    def _prepare_tab_5(self, tab5):
+        figure_id = self.create_figure_and_canvas(tab5)
+        self.map["plot.proto_application"] = self.create_plot(figure_id, 221)
+        self.map["plot.proto_transport"] = self.create_plot(figure_id, 222)
+        self.map["plot.proto_network"] = self.create_plot(figure_id, 223)
+        self.map["plot.proto_link"] = self.create_plot(figure_id, 224)
+
     def _initialize_ui(self):
         self.frame = ttk.Frame(self)
         self.frame.pack(fill=tk.BOTH, ipadx=10, ipady=10)
 
         self._init_buttons()
         tabs = self._init_tabs()
-        preps = [self._prepare_tab_1, self._prepare_tab_2, self._prepare_tab_3, self._prepare_tab_4]
+        preps = [self._prepare_tab_1, self._prepare_tab_2, self._prepare_tab_3,
+                 self._prepare_tab_4, self._prepare_tab_5]
         for tab, prep in zip(tabs, preps):
             prep(tab)
 
@@ -385,15 +389,17 @@ class PcapUi(tk.Tk):
                 messagebox.showerror("Error", str(e))
                 return
 
-            self.context.append(file_path)
-            self.update()
+            self.update(file_path)
 
         else:  # no file selected
             pass
 
     @with_loading_screen
-    def update(self):
+    def update(self, file_path=None):
         self.reset(keep_context=True)
+
+        if file_path:
+            self.context.append(file_path)
 
         details = self.context.df["packet.str"].str.cat(sep="\n")
         result = self.analyze_function(self.context)
@@ -404,6 +410,12 @@ class PcapUi(tk.Tk):
             "plot.dhcp_1": result["dhcp_clients"],
             "plot.dhcp_2": result["dhcp_servers"],
             "plot.dhcp_3": result["dhcp_domains"]
+        }
+        pie_data = {
+            "plot.proto_application": result["protocol_distribution"][LayerLevel.APPLICATION],
+            "plot.proto_transport": result["protocol_distribution"][LayerLevel.TRANSPORT],
+            "plot.proto_network": result["protocol_distribution"][LayerLevel.NETWORK],
+            "plot.proto_link": result["protocol_distribution"][LayerLevel.LINK]
         }
         indicators = result["indicators"]
         indicator_data = {
@@ -417,6 +429,7 @@ class PcapUi(tk.Tk):
         self.display_text(text_area_id=self.map["text_area.summary"], text=details)
         self.display_timeseries_dual(self.map["plot.speed"], result["speed_config"])
         self._display_bar_graphs(bar_data)
+        self._display_pie_charts(pie_data)
         self._display_indicators(indicator_data)
 
         if len(self.context) > 0:
@@ -426,6 +439,10 @@ class PcapUi(tk.Tk):
     def _display_bar_graphs(self, data):
         for name, value in data.items():
             self.display_bar_graph(self.map[name], value)
+
+    def _display_pie_charts(self, data):
+        for name, value in data.items():
+            self.display_pie_chart(self.map[name], value)
 
     def _display_indicators(self, data):
         for name, value in data.items():
@@ -582,6 +599,48 @@ class PcapUi(tk.Tk):
         self._setup_plot_2(plot2, data2, color2, y2label)
         self._sync_axes(data1, plot, plot2)
         self._add_freq_info(plot, data1)
+
+        # Adjust layout to make room for the labels if necessary
+        self.components["figures"][figure_id].tight_layout()
+
+        # Refreshing the canvas
+        self.components["canvases"][figure_id].draw()
+
+    def display_pie_chart(self, plot_id: int, config: FigureConfig):
+
+        # Fetch the plot and its parent figure
+        plot, figure_id = self.components["plots"][plot_id]
+
+        # Unpacking the configuration
+        title = config.title
+        data = config.data1
+        xlabel = config.xlabel
+        ylabel = config.y1label
+
+        # Adding title and labels
+        if title:
+            plot.set_title(title)
+        if xlabel:
+            plot.set_xlabel(xlabel)
+        if ylabel:
+            plot.set_ylabel(ylabel)
+
+        # Create the pie chart using the Pandas Series data
+        wedges, _ = plot.pie(data, startangle=90, labels=[""] * len(data))
+
+        plot.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+        # Add a legend with a title, locates it on the left
+        plot.legend(
+            wedges,
+            data.index,
+            title="Protocols",
+            loc="center left",
+            bbox_to_anchor=(
+                1,
+                0,
+                0.5,
+                1))
 
         # Adjust layout to make room for the labels if necessary
         self.components["figures"][figure_id].tight_layout()

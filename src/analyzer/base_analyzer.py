@@ -1,6 +1,7 @@
 import pandas as pd
 
 from utils.utils import custom_round
+from layers.layer_level import LayerLevel
 
 
 class BaseAnalyzer:
@@ -69,3 +70,21 @@ class BaseAnalyzer:
         time_latest = self.packets["packet.time"].max()
         duration = time_latest - time_earliest
         return time_earliest, time_latest, duration
+
+    def protocol_distribution(self) -> dict[LayerLevel, pd.Series]:
+        """Get protocol distribution of all packets.
+
+        Returns:
+            dict[LayerLevel, pd.Series]: protocol name, count
+        """
+        application = self.packets[f"{LayerLevel.APPLICATION}.layer_name"].value_counts()
+        transport = self.packets[f"{LayerLevel.TRANSPORT}.layer_name"].value_counts()
+        network = self.packets[f"{LayerLevel.NETWORK}.layer_name"].value_counts()
+        link = self.packets[f"{LayerLevel.LINK}.layer_name"].value_counts()
+
+        return {
+            LayerLevel.APPLICATION: application,
+            LayerLevel.TRANSPORT: transport,
+            LayerLevel.NETWORK: network,
+            LayerLevel.LINK: link
+        }
