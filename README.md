@@ -3,9 +3,7 @@ Harjoitustyönä teen sovelluksen, joka **visualisoi** yhteenvedon verkkoliikent
 
 ## Status
 Ohjelma kykenee parsimaan monenlaisia verkkopaketteja. Tekstimuodossa voi tarkastella tietoa kaikista paketeista,
-graafimuodossa tarjolla on yhteenveto yleisimmistä nimistä nimipalvelukyselyissä, yleisimmistä nimipalvelimista,
-sekä tiedonsiirron nopeudesta ajan suhteen. Lisäksi etusivulla on dashboard-tyylisesti muutama numeerinen
-indikaattori (pakettien määrä, tallennuksen kesto, jne.).
+graafimuodossa tarjolla on tilastoja DNS- ja DHCP liikenteestä. Lisäksi etusivulla on dashboard-tyylisesti muutama numeerinen indikaattori (pakettien määrä, tallennuksen kesto, jne.). Tarkastelemaan pääsee myös liikenteen protokollajakaumaa.
 
 ## Dokumentaatio
 [Työaikakirjanpito](dokumentaatio/tuntikirjanpito.md)  
