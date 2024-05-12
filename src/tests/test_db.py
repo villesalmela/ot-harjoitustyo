@@ -1,19 +1,17 @@
 import unittest
-import pandas as pd
-import uuid
 
 from config import DB_PATH
-from storage.database import DBStorage
 from main import Context
 
 DB_PATH_TEST = "test_database.db"
+ASSET_PATH = "assets/dns.pcapng"
 
 
 class TestDB(unittest.TestCase):
 
     def setUp(self) -> None:
         self.context = Context(reset_db=True)
-        self.context.append("assets/dns.pcap")
+        self.context.append(ASSET_PATH)
         self.storage = self.context.storage
         self.df = self.context.get_df()
 

@@ -8,12 +8,15 @@ from layers.dns import DNSDir, DNSOpCode, DNSQType, DNSRCode
 from main import Context
 
 
+ASSET_PATH = "assets/dns.pcapng"
+
+
 class TestDNS(unittest.TestCase):
     def setUp(self) -> None:
         parser = PcapParser()
-        self.parsed_packets = parser.parse_pcap("assets/dns.pcap")
+        self.parsed_packets = parser.parse_pcap(ASSET_PATH)
         context = Context()
-        context.append("assets/dns.pcap")
+        context.append(ASSET_PATH)
         self.analyzer = DNSAnalyzer(context.get_df())
 
     def test_count_dns_domains(self) -> None:

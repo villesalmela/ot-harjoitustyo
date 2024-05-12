@@ -14,6 +14,7 @@ from layers.layer_level import LayerLevel
 
 pd.set_option('future.no_silent_downcasting', True)
 
+
 class Context:
     def __init__(self, reset_db=False) -> None:
         self.df = pd.DataFrame()

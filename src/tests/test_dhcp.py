@@ -6,14 +6,16 @@ from layers.layer_level import LayerLevel
 from layers.dhcp import DHCPMessageType, BOOTPOpCode
 from main import Context
 
+ASSET_PATH = "assets/dhcp.pcapng"
+
 
 class TestDHCP(unittest.TestCase):
 
     def setUp(self) -> None:
         parser = PcapParser()
-        self.parsed_packets = parser.parse_pcap("assets/dhcp.pcap")
+        self.parsed_packets = parser.parse_pcap(ASSET_PATH)
         context = Context()
-        context.append("assets/dhcp.pcap")
+        context.append(ASSET_PATH)
         self.analyzer = DHCPAnalyzer(context.get_df())
 
     def test_dhcp_client_count(self) -> None:

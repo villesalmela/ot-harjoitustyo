@@ -5,11 +5,14 @@ from main import Context
 from analyzer.base_analyzer import BaseAnalyzer
 
 
+ASSET_PATH = "assets/example.pcapng"
+
+
 class TestProtocols(unittest.TestCase):
 
     def setUp(self) -> None:
         self.context = Context(reset_db=True)
-        self.context.append("assets/combo.pcapng")
+        self.context.append(ASSET_PATH)
         self.storage = self.context.storage
         self.df = self.context.get_df()
         self.base_analyzer = BaseAnalyzer(self.df)
