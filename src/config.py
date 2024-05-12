@@ -24,7 +24,7 @@ class StreamToLogger:
         pass
 
 
-def configure_logging():
+def configure_logging() -> None:
     """
     Redirects logs to a file.
 
@@ -42,6 +42,8 @@ def configure_logging():
 
 
 configure_logging()
+
 load_dotenv()  # handles searching for .env file and gracefully handles if it doesn't exist
 DB_PATH = os.getenv("DB_PATH", "database.db")
 TIMEOUT_SECONDS = int(os.getenv("TIMEOUT_SECONDS", "30"))
+FILESIZE_LIMIT_BYTES = int(os.getenv("FILESIZE_LIMIT_BYTES", "100000000"))  # 100 MB

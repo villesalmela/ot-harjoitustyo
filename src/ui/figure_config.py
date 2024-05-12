@@ -1,4 +1,6 @@
 class FigureConfig:
+    """Configuration for a matplotlib figure.
+    """
 
     def __init__(
             self,

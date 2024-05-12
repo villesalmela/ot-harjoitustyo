@@ -20,36 +20,51 @@ BOOLEAN_COLUMNS = [
 
 
 class DBStorage(Storage):
+    """SQLite database storage backend."""
+
     def __init__(self, filename: str, reset=False) -> None:
         self.filename = filename
         if reset:
             self.reset()
         self.conn = sqlite3.connect(filename, detect_types=sqlite3.PARSE_DECLTYPES)
-        self.dtype = self.build_dtypes()
-        self.register_properties()
-        self.register_uuid()
-        self.register_json()
-        self.create_slot_table()
+        self.dtype = self._build_dtypes()
+        self._register_properties()
+        self._register_uuid()
+        self._register_json()
+        self._create_slot_table()
 
     def reset(self) -> None:
+        """Delete the database file if it exists.
+        """
         file = Path(self.filename)
         if file.exists():
             file.unlink()
 
     @staticmethod
     def adjust_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+        """Adjusts the data types of the DataFrame.
+
+        Because of the way the data is stored in the database, some columns need to be converted
+        to the correct data type.
+
+        Args:
+            df (pd.DataFrame): DataFrame to adjust
+
+        Returns:
+            pd.DataFrame: Adjusted DataFrame
+        """
         for col in BOOLEAN_COLUMNS:
             if col in df:
                 df[col] = df[col].astype("boolean")
         return df.replace({"": pd.NA, None: pd.NA, np.nan: pd.NA}).convert_dtypes()
 
-    def create_slot_table(self) -> None:
+    def _create_slot_table(self) -> None:
         cursor = self.conn.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS slots (id INTEGER PRIMARY KEY,\
                         name TEXT UNIQUE);")
         self.conn.commit()
 
-    def get_slot_id(self, name: str) -> str:
+    def _get_slot_id(self, name: str) -> str:
         cursor = self.conn.cursor()
         cursor.execute("SELECT id FROM slots WHERE name = ?;", [name])
         result = cursor.fetchone()
@@ -62,62 +77,99 @@ class DBStorage(Storage):
         return f"t_{slot_id}"
 
     def slot_exists(self, name: str) -> bool:
+        """Check if a save slot exists.
+
+        Args:
+            name (str): name of the save slot
+
+        Returns:
+            bool: True if the slot exists
+        """
         cursor = self.conn.cursor()
         cursor.execute("SELECT id FROM slots WHERE name = ?;", [name])
         return cursor.fetchone() is not None
 
     def save(self, data: pd.DataFrame, name: str, new: bool = False) -> None:
+        """Save the DataFrame to the database.
+
+        Args:
+            data (pd.DataFrame): DataFrame to save
+            name (str): name of the save slot
+            new (bool, optional): If True, the slot will not be overwritten if it already exists.
+                Defaults to False.
+
+        Raises:
+            ValueError: If new is True amd the slot already exists
+        """
         if new and self.slot_exists(name):
             raise ValueError(f"Slot {name} already exists.")
-        slot = self.get_slot_id(name)
+        slot = self._get_slot_id(name)
         data.to_sql(slot, self.conn, if_exists="replace", dtype=self.dtype)
 
     def load(self, name: str) -> pd.DataFrame:
-        slot = self.get_slot_id(name)
+        """Load the DataFrame from the database.
+
+        Args:
+            name (str): name of the save slot
+
+        Returns:
+            pd.DataFrame: loaded DataFrame
+        """
+        slot = self._get_slot_id(name)
         df = pd.read_sql(f"SELECT * FROM {slot};", self.conn, index_col="packet.uid")
         return self.adjust_dtypes(df)
 
     def list_slots(self) -> list[str]:
+        """List all available save slots.
+
+        Returns:
+            list[str]: list of slot names
+        """
         cursor = self.conn.cursor()
         cursor.execute("SELECT name FROM slots;")
         return [row[0] for row in cursor.fetchall()]
 
     def del_slot(self, name: str) -> None:
-        slot = self.get_slot_id(name)
+        """Delete a save slot.
+
+        Args:
+            name (str): name of the save slot
+        """
+        slot = self._get_slot_id(name)
         cursor = self.conn.cursor()
         cursor.execute(f"DROP TABLE {slot};")
         cursor.execute("DELETE FROM slots WHERE name = ?;", [name])
         self.conn.commit()
 
     @classmethod
-    def register_uuid(cls) -> None:
-        sqlite3.register_adapter(UUID, cls.adapt_uuid)
-        sqlite3.register_converter('uuid', cls.convert_uuid)
+    def _register_uuid(cls) -> None:
+        sqlite3.register_adapter(UUID, cls._adapt_uuid)
+        sqlite3.register_converter('uuid', cls._convert_uuid)
 
     @classmethod
-    def register_json(cls) -> None:
-        sqlite3.register_adapter(list, cls.adapt_list)
-        sqlite3.register_adapter(dict, cls.adapt_dict)
-        sqlite3.register_converter('TEXT', cls.convert_text)
+    def _register_json(cls) -> None:
+        sqlite3.register_adapter(list, cls._adapt_list)
+        sqlite3.register_adapter(dict, cls._adapt_dict)
+        sqlite3.register_converter('TEXT', cls._convert_text)
 
     @staticmethod
-    def adapt_uuid(uuid_obj: UUID) -> bytes:
+    def _adapt_uuid(uuid_obj: UUID) -> bytes:
         return uuid_obj.bytes
 
     @staticmethod
-    def convert_uuid(b: bytes) -> UUID:
+    def _convert_uuid(b: bytes) -> UUID:
         return UUID(bytes=b)
 
     @staticmethod
-    def adapt_list(list_obj) -> bytes:
+    def _adapt_list(list_obj) -> bytes:
         return json.dumps(list_obj).encode('utf-8')
 
     @staticmethod
-    def adapt_dict(dict_obj) -> bytes:
+    def _adapt_dict(dict_obj) -> bytes:
         return json.dumps(dict_obj).encode('utf-8')
 
     @staticmethod
-    def convert_text(b: bytes) -> str:
+    def _convert_text(b: bytes) -> str:
         text = b.decode('utf-8')
         if (text.startswith('[') and text.endswith(']')) \
                 or (text.startswith('{') and text.endswith('}')):
@@ -125,7 +177,7 @@ class DBStorage(Storage):
         return text
 
     @staticmethod
-    def build_dtypes() -> dict[str, str]:
+    def _build_dtypes() -> dict[str, str]:
         dtype = {}
         for layer in LAYERS:
             for key, value in layer.dtypes.items():
@@ -134,6 +186,6 @@ class DBStorage(Storage):
         return dtype
 
     @staticmethod
-    def register_properties() -> None:
+    def _register_properties() -> None:
         for prop in PROPERTIES:
             prop.register()

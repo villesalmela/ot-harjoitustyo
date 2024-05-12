@@ -8,30 +8,40 @@ from pathlib import Path
 
 import tldextract
 import pandas as pd
+import humanize
+from config import FILESIZE_LIMIT_BYTES
 
 
-# Max size 100 MB
-FILESIZE_LIMIT = 1024 * 1024 * 100  # 1024 b = 1 kb,  1024 kb = 1 Mb
-FILESIZE_LIMIT_STR = "100 MB"
+def preprocess_bytes(data: bytes) -> str:
+    """Strip null bytes and decode to UTF-8 string, or return hex representation if decoding fails.
 
+    Args:
+        data (bytes): Data to preprocess
 
-def preprocess_bytes(data):
+    Returns:
+        str: Processed data
+    """
     data = data.strip(b"\x00")
     try:
-        # Attempt to decode bytes to a UTF-8 string
-        data = data.decode('utf-8')
+        str_data = data.decode('utf-8')
     except UnicodeDecodeError:
-        # Return hexadecimal representation if decoding fails
-        data = data.hex()
-    return data
+        str_data = data.hex()
+    return str_data
 
 
-def preprocess_numbers(data):
+def preprocess_numbers(data) -> int | float:
+    """Convert data to int or float, depending on the type.
+
+    Args:
+        data: Data to preprocess
+
+    Returns:
+        int | float: Processed data
+    """
     try:
         # Attempt conversion to int if it matches exactly
         data = int(data) if data == int(data) else float(data)
     except (ValueError, TypeError, OverflowError, NotImplementedError):
-        # If conversion to int fails, fall back to float
         data = float(data)
     return data
 
@@ -65,35 +75,35 @@ def preprocess_data(data):
     return data
 
 
-def extract_2ld(fqdn):
+def extract_2ld(fqdn: str):
     """Generated with ChatGPT.
 
     Extract the second level domain from a fully qualified domain name (FQDN).
-    :param fqdn: Fully qualified domain name
-    :return: 2LD and TLD combined
+
+    Args:
+        fqdn (str): Fully qualified domain name
+
+    Returns:
+        str: Second level domain or pd.NA if the input is missing
     """
 
     if pd.isna(fqdn):
         return pd.NA
 
-    # First try with tldextract
     extracted = tldextract.extract(fqdn)
     if extracted.domain and extracted.suffix:
-        # If both parts are identified, return them
         return f"{extracted.domain}.{extracted.suffix}"
 
     # Fallback mechanism
     parts = fqdn.split('.')
-
-    # Basic assumption: The last two parts are the domain and TLD
     if len(parts) >= 2:
         return f"{parts[-2]}.{parts[-1]}"
-
-    # Return the original
     return fqdn
 
 
 class JSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder that converts Enum values to their names and tuple keys to strings.
+    """
     def default(self, o):
         if isinstance(o, Enum):
             return o.name
@@ -111,40 +121,35 @@ class JSONEncoder(json.JSONEncoder):
         return super().encode(o)
 
 
-def collect_keys(data: list):
+def _collect_keys(data: list):
     dict_keys = set()
-    # Collect all unique keys from each dictionary in the list
     for item in data:
         if isinstance(item, dict):
             dict_keys.update(item.keys())
     return dict_keys
 
 
-def append_value_if_any(source_dict, dict_keys, target_dict, prefix, sep):
+def _append_value_if_any(source_dict, dict_keys, target_dict, prefix, sep):
     for dkey in dict_keys:
         target_dict[f"{prefix}{sep}{dkey}"].append(source_dict.get(dkey, None))
 
 
-def process_item(items, sep, key, value, prefix=''):
-    # Construct the full key from prefix and current key with proper handling for nested lists
+def _process_item(items, sep, key, value, prefix=''):
     full_key = f"{prefix}{sep}{key}" if prefix else key
 
     if isinstance(value, dict):
-        # Recurse into dictionaries
         for sub_key, sub_val in flatten_dict(value, full_key, sep).items():
             items.append((sub_key, sub_val))
     elif isinstance(value, list):
-        # Handle list, may contain dicts or other lists
         list_items = defaultdict(list)
         simple_values = []
-        dict_keys = collect_keys(value)
+        dict_keys = _collect_keys(value)
 
         for i, item in enumerate(value):
             if isinstance(item, dict):
-                append_value_if_any(item, dict_keys, list_items, full_key, sep)
+                _append_value_if_any(item, dict_keys, list_items, full_key, sep)
             elif isinstance(item, list):
-                # Recursive call to handle nested lists with correct indexing
-                process_item(items, sep, i, item, full_key)
+                _process_item(items, sep, i, item, full_key)
             else:
                 simple_values.append(item)
 
@@ -156,24 +161,54 @@ def process_item(items, sep, key, value, prefix=''):
         items.append((full_key, value))
 
 
-def flatten_dict(d, parent_key='', sep='.'):
-    """Generated with ChatGPT."""
+def flatten_dict(d: dict, parent_key="", sep=".") -> dict:
+    """Flatten a nested dictionary.
+
+    Generated with ChatGPT.
+
+    Nested dictionaries are flattened into a single level dictionary with dot-separated keys
+    representing the hierarchy of the original keys.
+    
+    Lists are flattened into separate keys with the list index as the key.
+
+    Args:
+        d (dict): Dictionary to flatten
+        parent_key (str, optional): key prefix for nested dictionaries. Defaults to "".
+        sep (str, optional): separator for nested keys. Defaults to ".".
+
+    Returns:
+        dict: Flattened dictionary
+    """
     items = []
     for key, val in d.items():
-        process_item(items, sep, key, val, parent_key)
+        _process_item(items, sep, key, val, parent_key)
     return dict(items)
 
 
-def convert_mac(mac):
-    """Generated with ChatGPT.
+def convert_mac(mac: bytes) -> str:
+    """Convert MAC address from bytes to a human-readable string.
 
-    Convert a MAC address to a colon-separated hexadecimal string.
+    Generated with ChatGPT.
+
+    Args:
+        mac (bytes): MAC address in bytes
+
+    Returns:
+        str: MAC address in human-readable format
     """
     return ":".join([f"{int(byte):02x}" for byte in mac.strip(b"\x00")])
 
 
-def scale_bits(bits: pd.Series | Number):
-    if isinstance(bits, pd.Series):  # Determine the scale based on the maximum value
+def scale_bits(bits: pd.Series | Number) -> tuple[pd.Series | Number, str]:
+    """Scale bits to Kbits or Mbits if necessary.
+
+    Args:
+        bits (pd.Series | Number): Bits to scale
+
+    Returns:
+        tuple[pd.Series | Number, str]: Scaled bits, unit
+    """
+    if isinstance(bits, pd.Series):
         orig_scale = bits.max()
     else:
         orig_scale = bits
@@ -190,11 +225,22 @@ def scale_bits(bits: pd.Series | Number):
 
 
 def convert_to_bits(bytes_value):
+    """Multiply the value(s) by 8 to convert bytes to bits."""
     return bytes_value * 8
 
 
-def custom_round(x):
-    "Round to 1, 2, 5 or scaled multiple of 10"
+def custom_round(x: int | float) -> int:
+    """Round a number to the nearest 1, 2, 5, or multiple of 10.
+
+    Args:
+        x (int | float): Number to round
+
+    Raises:
+        ValueError: If the input is negative
+
+    Returns:
+        int: Rounded number
+    """
     if x < 0:
         raise ValueError
     if x < 1.5:
@@ -211,6 +257,14 @@ def custom_round(x):
 
 
 def check_file(filename: str):
+    """Check if the file exists, is a PCAP file, and is within the size limit.
+
+    Args:
+        filename (str): Path to the file
+
+    Raises:
+        FileNotFoundError: if file is not found, not a PCAP file, or exceeds the size limit
+    """
     file = Path(filename)
     size = file.stat().st_size
     suffix = file.suffix
@@ -221,11 +275,21 @@ def check_file(filename: str):
     if suffix not in (".pcap", ".pcapng"):
         raise FileNotFoundError(f"File must be a PCAP file, not '{suffix}'")
 
-    if size > FILESIZE_LIMIT:
-        raise FileNotFoundError(f"File size exceeds the limit of {FILESIZE_LIMIT_STR}")
+    if size > FILESIZE_LIMIT_BYTES:
+        raise FileNotFoundError(
+            f"File size exceeds the limit of {humanize.naturalsize(FILESIZE_LIMIT_BYTES)}")
 
 
-def start_timer(seconds: int, command: Callable):
+def start_timer(seconds: int, command: Callable) -> Timer:
+    """Start a timer that executes a command after a specified number of seconds.
+
+    Args:
+        seconds (int): Number of seconds to wait
+        command (Callable): Function to execute
+
+    Returns:
+        Timer: Timer object
+    """
     timer = Timer(seconds, command)
     timer.start()
     return timer

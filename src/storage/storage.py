@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class Storage(ABC):
+    """Abstract class for storage backend.
+    """
 
     @abstractmethod
     def __init__(self) -> None:
