@@ -50,7 +50,7 @@
     - linttaus pylintillä: invoke lint
     - formatointi autopep8 ja docformatterilla: invoke format
 
-# Viikko 5
+# Viikko 5 & 6
 - Lisätty luokkia pakettien esittämiseen
     - ICMP
     - IPv6
@@ -92,3 +92,17 @@
     - Lisätty latausindikaattori
     - Estetty tulosteen muokkaminen
     - Tiedostovalinnan virheet esitetään viestillä käyttäjälle
+
+# Viikko 7
+- Lisätty toiminnallisuuksia
+    - Käyttäjä voi tarkastella protokollajakaumaa neljällä eri tasolla
+        - application
+        - transport
+        - network
+        - link
+- Ehostettu käyttöliittymää
+    - Selkeytetty värejä
+    - Ryhmitelty nappuloita
+    - Lisätty graafeja
+- Parannettu lokitusta
+    - Kaikki stdout tai stderr viestit viedään app.log lokitiedostoon

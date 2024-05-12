@@ -7,6 +7,20 @@ Parsinnan tuloksena tieto tallennetaan Packet-olioihin, jotka sisältävät Laye
 
 <img src="overview.svg">
 
+## Tietorakenteet
+Ohjelma pitää parsittua ja rikastettua tietoa muistissa Pandas-kirjaston DataFrame-oliossa, jossa jokainen paketti
+vie yhden rivin, ja sen attribuutit ovat jokainen eri sarakkeessa.
+
+Pysyväistallennus tapahtuu viemällä DataFrame SQLite tietokantaan.
+
+### Tietokanta
+Sarakkeiden määrään ja nimiin vaikuttaa suoraan parsittujen pakettien sisältö, joka luonnollisesti
+vaihtelee sen mukaan, mitä tiedostoa analysoidaan. Näin ollen jokaiselle tallennuspaikalle tehdään oma taulu,
+jonka nimeksi tulee tallennuspaikan ID.
+
+Tallennuspaikkojen ID ja käyttäjälle näkyvä nimi yhdistetään toisiinsa "slots" taulussa.
+
+
 ## Sekvenssikaavio
 Oheinen kaavio esittää ylätasolla, miten tapahtuu PCAP-tiedoston valinta, parsinta, analysointi ja
 visualisoinnin konfigurointi.

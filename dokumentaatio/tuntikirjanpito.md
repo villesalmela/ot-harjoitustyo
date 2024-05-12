@@ -32,4 +32,8 @@
 | 27.4. | 8    | lisätty tallennus/lataus, tähän liittyvää refactorointia |
 | 30.4. | 3    | eriytetty tietokantatoiminnot omaan luokkaansa |
 | 30.4. | 2    | dokumentaatiota |
-| summa | 80   | |
+| 9.5.  | 7    | refaktorointia ja formatointia |
+| 10.5. | 5    | lisätty protokollien jakauma, konfiguroinnin laajennusta |
+| 11.5. | 2    | käyttöliittymän ehostusta ja refaktorointia |
+| 12.5. | 8    | viimeistelyä |
+| summa | 102   | |
