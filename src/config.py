@@ -44,3 +44,4 @@ def configure_logging():
 configure_logging()
 load_dotenv()  # handles searching for .env file and gracefully handles if it doesn't exist
 DB_PATH = os.getenv("DB_PATH", "database.db")
+TIMEOUT_SECONDS = int(os.getenv("TIMEOUT_SECONDS", "30"))
