@@ -218,7 +218,7 @@ def check_file(filename: str):
     if not (file.exists() and file.is_file()):
         raise FileNotFoundError(f"File not found: {filename}")
 
-    if suffix != ".pcap":
+    if suffix not in (".pcap", ".pcapng"):
         raise FileNotFoundError(f"File must be a PCAP file, not '{suffix}'")
 
     if size > FILESIZE_LIMIT:

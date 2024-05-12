@@ -14,12 +14,6 @@ from layers.layer_level import LayerLevel
 
 pd.set_option('future.no_silent_downcasting', True)
 
-# for debugging
-# pd.set_option('display.max_columns', None)
-# pd.set_option('display.max_rows', None)
-# pd.set_option('display.width', 300)
-
-
 class Context:
     def __init__(self, reset_db=False) -> None:
         self.df = pd.DataFrame()
