@@ -14,6 +14,7 @@ indikaattori (pakettien määrä, tallennuksen kesto, jne.).
 [Release](https://github.com/villesalmela/ot-harjoitustyo/releases/tag/Viikko5)  
 [Arkkitehtuuri](dokumentaatio/arkkitehtuuri.md)  
 [Käyttöohje](dokumentaatio/käyttöohje.md)
+[Testausdokumentti](dokumentaatio/testaus.md)
 
 
 ## Asennus
